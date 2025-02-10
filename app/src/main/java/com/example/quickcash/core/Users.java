@@ -22,7 +22,7 @@ public class Users {
         this.usersRef = firebase.getDb().getReference("Users");
     }
 
-    public void createUser( String password, String email, UserCallback callback) {
+    public void createUser(String username, String password, String email, UserCallback callback) {
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 FirebaseUser firebaseUser = auth.getCurrentUser();
@@ -30,7 +30,7 @@ public class Users {
                 if (firebaseUser != null) {
                     String userId = firebaseUser.getUid();
 
-                    UserModel newUser = new UserModel(email, password);
+                    UserModel newUser = new UserModel(username, email, password);
 
                     usersRef.child(userId).setValue(newUser)
                             .addOnCompleteListener(item -> {
