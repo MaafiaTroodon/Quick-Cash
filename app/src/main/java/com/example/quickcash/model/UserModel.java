@@ -1,11 +1,10 @@
 package com.example.quickcash.model;
 
-import android.service.autofill.AutofillService;
-
 public class UserModel {
     private String username;
     private String email;
     private String password;
+    private SecurityModel securityAns;
 
     public UserModel() {
     }
@@ -38,6 +37,10 @@ public class UserModel {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setSecurityAns(String q1ans, String q2ans, String q3ans){
+        this.securityAns = new SecurityModel(q1ans, q2ans, q3ans);
     }
 
     @Override
