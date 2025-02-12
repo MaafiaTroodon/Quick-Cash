@@ -1,5 +1,7 @@
 package com.example.quickcash.ui;
+
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -18,15 +20,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_account);
+        Intent intent = new Intent(MainActivity.this, CreateAccount.class);
+        startActivity(intent);
 
         FirebaseApp.initializeApp(this);
         Firebase firebaseInstance = new Firebase();
         userDatabase = new Users(firebaseInstance);
 
         EditText usernameEditText = findViewById(R.id.userName);
-        EditText emailEditText = findViewById(R.id.Email);
-        EditText passwordEditText = findViewById(R.id.Password);
+        EditText emailEditText = findViewById(R.id.email); // Corrected ID
+        EditText passwordEditText = findViewById(R.id.password); // Corrected ID
         Button confirmButton = findViewById(R.id.buttonCreateAccount);
 
         confirmButton.setOnClickListener(v -> {
