@@ -39,15 +39,11 @@ public class UserModel {
         this.password = password;
     }
 
-    public void setSecurityAns(String q1ans, String q2ans, String q3ans){
-        this.securityAns = new SecurityModel(q1ans, q2ans, q3ans);
+    public SecurityModel getSecurityAns() {
+        return securityAns;
     }
 
-    @Override
-    public String toString() {
-        return "UserModel{" +
-                "email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                '}';
+    public void setSecurityAns(String q1ans, String q2ans, String q3ans) {
+        this.securityAns = new SecurityModel(q1ans, q2ans, q3ans);
     }
 }
