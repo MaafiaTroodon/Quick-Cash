@@ -4,15 +4,17 @@ public class UserModel {
     private String username;
     private String email;
     private String password;
+    private String role;
     private SecurityModel securityAns;
 
     public UserModel() {
     }
 
-    public UserModel(String username, String email, String password) {
+    public UserModel(String username, String email, String password, String role) {
         this.username = username;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     public String getUsername() {
@@ -31,6 +33,14 @@ public class UserModel {
         this.email = email;
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
     public String getPassword() {
         return password;
     }
@@ -43,7 +53,7 @@ public class UserModel {
         return securityAns;
     }
 
-    public void setSecurityAns(String q1ans, String q2ans, String q3ans) {
-        this.securityAns = new SecurityModel(q1ans, q2ans, q3ans);
+    public void setSecurityAns(SecurityModel securityAns) {
+        this.securityAns = securityAns;
     }
 }
