@@ -60,9 +60,12 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
 
                 Intent intent;
-                if ("creator".equals(role)) {
+                if ("creator".equalsIgnoreCase(role)) {  // Use equalsIgnoreCase
                     intent = new Intent(LoginActivity.this, CreatorDashboard.class);
+                } else if ("searcher".equalsIgnoreCase(role)) {
+                    intent = new Intent(LoginActivity.this, SearcherDashboard.class);
                 } else {
+                    // Handle unknown roles
                     intent = new Intent(LoginActivity.this, SearcherDashboard.class);
                 }
 
