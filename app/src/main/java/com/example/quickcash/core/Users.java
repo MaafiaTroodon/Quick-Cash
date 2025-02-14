@@ -119,12 +119,30 @@ public class Users {
         auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        callback.onSuccess("Login successful!");
+                        // Fetch user role from Firebase
+                        String sanitizedEmail = email.replace(".", ","); // Ensure it matches Firebase key
+                        usersRef.child(sanitizedEmail).child("role").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    String role = dataSnapshot.getValue(String.class);
+                                    callback.onSuccess(role); // Pass the role to the callback
+                                } else {
+                                    callback.onError("Role not found.");
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                callback.onError("Database error: " + databaseError.getMessage());
+                            }
+                        });
                     } else {
                         callback.onError("Login failed: " + task.getException().getMessage());
                     }
                 });
     }
+
 
 
     private DatabaseReference getUserRef(String userId) {

@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.quickcash.R;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class Dashboard extends AppCompatActivity {
+public class SearcherDashboard extends AppCompatActivity {
 
     private TextView welcomeText;
     private Button logoutButton;
@@ -18,7 +18,7 @@ public class Dashboard extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_dashboard);
+        setContentView(R.layout.activity_searcherdashboard);
 
         welcomeText = findViewById(R.id.heading);
         logoutButton = findViewById(R.id.LogOut);
@@ -27,8 +27,8 @@ public class Dashboard extends AppCompatActivity {
 
         logoutButton.setOnClickListener(v -> {
             auth.signOut();
-            Toast.makeText(Dashboard.this, "Logged out successfully!", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(Dashboard.this, LoginActivity.class));
+            Toast.makeText(SearcherDashboard.this, "Logged out successfully!", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(SearcherDashboard.this, LoginActivity.class));
             finish();
         });
     }
