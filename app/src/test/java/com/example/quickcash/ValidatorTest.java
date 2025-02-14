@@ -44,7 +44,7 @@ public class ValidatorTest {
     @Test
     public void checkIfRoleIsValid() {
         //incomplete. Roles may vary depending on the role names.
-        assertTrue(validator.isValidRole("Job creator"));
-        assertTrue(validator.isValidRole("Job searcher"));
+        assertTrue(validator.isValidRole("Creator"));
+        assertTrue(validator.isValidRole("Searcher"));
     }
 }
