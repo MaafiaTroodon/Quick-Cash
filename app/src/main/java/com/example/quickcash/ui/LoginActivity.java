@@ -7,31 +7,36 @@ import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.quickcash.R;
-import com.google.firebase.auth.FirebaseAuth;
+import com.example.quickcash.core.Users;
+import com.example.quickcash.database.Firebase;
 
 public class LoginActivity extends AppCompatActivity {
-    private FirebaseAuth auth;
     private EditText emailEditText, passwordEditText;
     private Button loginButton, forgotPasswordButton, createAccountBack;
+    private Users users;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        createAccountBack = findViewById(R.id.buttonCreateAccount2);
 
-        auth = FirebaseAuth.getInstance();
+        // Initialize UI elements
         emailEditText = findViewById(R.id.editTextEmail);
         passwordEditText = findViewById(R.id.editTextPassword);
         loginButton = findViewById(R.id.buttonLogin);
         forgotPasswordButton = findViewById(R.id.buttonForgotPassword);
+        createAccountBack = findViewById(R.id.buttonCreateAccount2);
 
+        // Initialize Users class
+        Firebase firebase = new Firebase();
+        users = new Users(firebase);
+
+        // Set button click listeners
         loginButton.setOnClickListener(v -> loginUser());
         forgotPasswordButton.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, ResetPasswordActivity.class);
             startActivity(intent);
         });
-
         createAccountBack.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, CreateAccount.class);
             startActivity(intent);
@@ -47,17 +52,21 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(LoginActivity.this, Dashboard.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        finish();
-                    } else {
-                        Toast.makeText(LoginActivity.this, "Login failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                });
+        // Call loginUser() from Users class
+        users.loginUser(email, password, new Users.UserCallback() {
+            @Override
+            public void onSuccess(String message) {
+                Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(LoginActivity.this, Dashboard.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            }
+
+            @Override
+            public void onError(String error) {
+                Toast.makeText(LoginActivity.this, error, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

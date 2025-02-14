@@ -25,4 +25,10 @@ public class SecurityModel {
     public String getQuestion3() {
         return question3;
     }
+
+    public boolean isQuestions(String q1, String q2, String q3){
+        return (this.question1.equals(q1) &&
+                this.question2.equals(q2) &&
+                this.question3.equals(q3));
+    }
 }
