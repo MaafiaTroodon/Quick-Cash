@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.quickcash.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,10 +28,17 @@ public class Dashboard extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
 
         logoutButton.setOnClickListener(v -> {
-            auth.signOut();
-            Toast.makeText(Dashboard.this, "Logged out successfully!", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(Dashboard.this, LoginActivity.class));
-            finish();
+            new AlertDialog.Builder(Dashboard.this)
+                    .setMessage("Are you sure you want to log out?")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes", (dialog, id) -> {
+                        auth.signOut();
+                        Toast.makeText(Dashboard.this, "Logged out successfully!", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(Dashboard.this, LoginActivity.class));
+                        finish();
+                    })
+                    .setNegativeButton("No", (dialog, id) -> dialog.dismiss())
+                    .show();
         });
     }
 }

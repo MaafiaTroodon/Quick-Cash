@@ -34,6 +34,10 @@
         <activity android:name=".ui.Dashboard"
             android:exported="true"/>
 
+        <!-- Front Page Activity -->
+        <activity android:name=".ui.FrontPage"
+            android:exported="true"/>
+
     </application>
 
 </manifest>
