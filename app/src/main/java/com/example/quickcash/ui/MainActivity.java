@@ -1,6 +1,7 @@
 package com.example.quickcash.ui;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -19,7 +20,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_account);
+        Intent intent = new Intent(MainActivity.this, CreateAccount.class);
+        startActivity(intent);
 
         FirebaseApp.initializeApp(this);
         Firebase firebaseInstance = new Firebase();

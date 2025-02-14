@@ -2,6 +2,7 @@ package com.example.quickcash.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -45,6 +46,7 @@ public class CreateAccount extends AppCompatActivity {
         loginLink.setOnClickListener(v -> {
             Intent intent = new Intent(CreateAccount.this, LoginActivity.class);
             startActivity(intent);
+            finish();
         });
     }
 

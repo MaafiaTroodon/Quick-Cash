@@ -1,9 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
-    <!-- Permissions (if Firebase is used, add INTERNET permission) -->
-    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -16,7 +12,7 @@
         android:theme="@style/Theme.QuickCash"
         tools:targetApi="31">
 
-        <!-- MainActivity (Launcher Activity) -->
+        <!-- Main Activity (Launcher) -->
         <activity
             android:name=".ui.MainActivity"
             android:exported="true">
@@ -26,17 +22,25 @@
             </intent-filter>
         </activity>
 
-        <!-- CreateAccount Activity (Added exported="true") -->
-        <activity
-            android:name=".ui.CreateAccount"
-            android:exported="true">
-        </activity>
+        <!-- Login Activity -->
+        <activity android:name=".ui.LoginActivity"
+            android:exported="true" />
 
-        <!-- LoginActivity (Ensuring it's correctly configured) -->
-        <activity
-            android:name=".ui.LoginActivity"
-            android:exported="true">
-        </activity>
+        <!-- Create Account Activity (Added this) -->
+        <activity android:name=".ui.CreateAccount"
+            android:exported="true" />
+
+        <!-- Reset Password Activity -->
+        <activity android:name=".ui.ResetPasswordActivity"
+            android:exported="true" />
+
+        <!-- Forgot Password Activity -->
+        <activity android:name=".ui.ForgotPasswordActivity"
+            android:exported="true"/>
+
+        <!-- Dashboard Activity -->
+        <activity android:name=".ui.Dashboard"
+            android:exported="true"/>
 
     </application>
 

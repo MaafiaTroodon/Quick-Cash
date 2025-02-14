@@ -42,10 +42,10 @@ public class CreateAccountTest {
         Espresso.onView(ViewMatchers.withId(R.id.userName))
                 .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
 
-        Espresso.onView(ViewMatchers.withId(R.id.Email))
+        Espresso.onView(ViewMatchers.withId(R.id.email))
                 .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
 
-        Espresso.onView(ViewMatchers.withId(R.id.Password))
+        Espresso.onView(ViewMatchers.withId(R.id.password))
                 .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
 
         Espresso.onView(ViewMatchers.withId(R.id.confirmPassword))
@@ -60,10 +60,10 @@ public class CreateAccountTest {
         Espresso.onView(ViewMatchers.withId(R.id.userName))
                 .perform(ViewActions.typeText("testuser"), ViewActions.closeSoftKeyboard());
 
-        Espresso.onView(ViewMatchers.withId(R.id.Email))
+        Espresso.onView(ViewMatchers.withId(R.id.email))
                 .perform(ViewActions.typeText("test@example.com"), ViewActions.closeSoftKeyboard());
 
-        Espresso.onView(ViewMatchers.withId(R.id.Password))
+        Espresso.onView(ViewMatchers.withId(R.id.password))
                 .perform(ViewActions.typeText("password123"), ViewActions.closeSoftKeyboard());
 
         Espresso.onView(ViewMatchers.withId(R.id.confirmPassword))

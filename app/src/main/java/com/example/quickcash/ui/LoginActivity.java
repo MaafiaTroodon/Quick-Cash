@@ -2,22 +2,26 @@ package com.example.quickcash.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.quickcash.R;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private EditText emailEditText, passwordEditText;
-    private Button loginButton, forgotPasswordButton;
+    private Button loginButton, forgotPasswordButton, createAccountBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        createAccountBack = findViewById(R.id.buttonCreateAccount2);
 
         auth = FirebaseAuth.getInstance();
         emailEditText = findViewById(R.id.editTextEmail);
@@ -27,7 +31,12 @@ public class LoginActivity extends AppCompatActivity {
 
         loginButton.setOnClickListener(v -> loginUser());
         forgotPasswordButton.setOnClickListener(v -> {
-            Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
+            Intent intent = new Intent(LoginActivity.this, ResetPasswordActivity.class);
+            startActivity(intent);
+        });
+
+        createAccountBack.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, CreateAccount.class);
             startActivity(intent);
         });
     }
@@ -35,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
     private void loginUser() {
         String email = emailEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
+
 
         if (email.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "All fields are required!", Toast.LENGTH_SHORT).show();
@@ -45,7 +55,7 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        Intent intent = new Intent(LoginActivity.this, Dashboard.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                         finish();
@@ -54,4 +64,5 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
     }
+
 }
