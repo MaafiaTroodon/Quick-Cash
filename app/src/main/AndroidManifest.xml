@@ -14,7 +14,7 @@
 
         <!-- Main Activity (Launcher) -->
         <activity
-            android:name=".ui.LoginActivity"
+            android:name=".ui.FrontPage"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,8 +34,8 @@
         <activity android:name=".ui.Dashboard"
             android:exported="true"/>
 
-        <!-- Front Page Activity -->
-        <activity android:name=".ui.FrontPage"
+        <!-- Login Activity Activity -->
+        <activity android:name=".ui.LoginActivity"
             android:exported="true"/>
 
     </application>
