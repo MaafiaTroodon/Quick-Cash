@@ -17,7 +17,7 @@ public class Validator {
         if (password == null || password.isEmpty()) {
             return false;
         }
-        String passwordRegex = "^(?=.*[a-zA-Z0-9]{7,})(?=.*[!@#$%^&*]+).{8,}$";
+        String passwordRegex = "^(?=(?:.*[a-zA-Z0-9]){7,})(?=.*[!@#$%^&*]).{8,}$";
         return password.matches(passwordRegex);
     }
 

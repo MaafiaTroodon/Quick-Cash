@@ -32,11 +32,13 @@ public class ValidatorTest {
     @Test
     public void checkIfPasswordIsValid() {
         assertTrue(validator.isValidPassword("pass122!@"));
+        assertTrue(validator.isValidPassword("pass!@122"));
     }
 
     @Test
     public void checkIfPasswordIsNotValid() {
         assertFalse(validator.isValidPassword("pa1223"));
+        assertFalse(validator.isValidPassword("!@#!@#!@#"));
     }
 
     @Test
