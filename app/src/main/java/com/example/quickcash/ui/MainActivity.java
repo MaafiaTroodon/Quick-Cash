@@ -20,8 +20,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Intent intent = new Intent(MainActivity.this, CreateAccount.class);
+        Intent intent = new Intent(MainActivity.this, FrontPage.class);
         startActivity(intent);
+        setContentView(R.layout.activity_create_account);
 
         FirebaseApp.initializeApp(this);
         Firebase firebaseInstance = new Firebase();

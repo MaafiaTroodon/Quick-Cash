@@ -59,11 +59,11 @@ public class LoginActivityTest {
     @Test
     public void testLoginPassAndNavigatesToDashboard() throws InterruptedException {
         // Simulate typing invalid credentials and clicking login
-        onView(withId(R.id.editTextEmail)).perform(typeText("ak298902@dal.ca"), closeSoftKeyboard());
-        onView(withId(R.id.editTextPassword)).perform(typeText("cacaca"), closeSoftKeyboard());
+        onView(withId(R.id.editTextEmail)).perform(typeText("taiki@gmail.com"), closeSoftKeyboard());
+        onView(withId(R.id.editTextPassword)).perform(typeText("Taiki123@"), closeSoftKeyboard());
         onView(withId(R.id.buttonLogin)).perform(click());
 
-        Thread.sleep(2000);
+        Thread.sleep(5000);
         onView(withId(R.id.dashboardLayout))
                 .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
     }
