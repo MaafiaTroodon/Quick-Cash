@@ -3,6 +3,7 @@ package com.example.quickcash.core;
 import androidx.annotation.NonNull;
 
 import com.example.quickcash.database.Firebase;
+import com.example.quickcash.model.SecurityModel;
 import com.example.quickcash.model.UserModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -22,17 +23,21 @@ public class Users {
         this.usersRef = firebase.getDb().getReference("Users");
     }
 
-    public void createUser(String username, String password, String email, UserCallback callback) {
+    public void createUser(String username, String password, String email, String role, SecurityModel securityAnswers, UserCallback callback) {
+        // Sanitize email to make it a valid Firebase key
+        String sanitizedEmail = email.replace(".", ",");
+
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 FirebaseUser firebaseUser = auth.getCurrentUser();
-
                 if (firebaseUser != null) {
-                    String userId = firebaseUser.getUid();
 
-                    UserModel newUser = new UserModel(username, email, password);
+                    // Include security answers in UserModel
+                    UserModel newUser = new UserModel(username, email, password, role);
+                    newUser.setSecurityAns(securityAnswers);
 
-                    usersRef.child(userId).setValue(newUser)
+                    // Store user under email instead of UID
+                    usersRef.child(sanitizedEmail).setValue(newUser)
                             .addOnCompleteListener(item -> {
                                 if (item.isSuccessful()) {
                                     callback.onSuccess("User added successfully!");
@@ -48,19 +53,79 @@ public class Users {
         });
     }
 
-    public void checkIfEmailExists(String username, UsernameCallback callback) {
-        usersRef.orderByChild("email").equalTo(username).addListenerForSingleValueEvent(new ValueEventListener() {
+
+    public void forgotPassword(String email, String ans1, String ans2, String ans3, String newPassword, String confirmPassword, UserCallback callback) {
+        // Sanitize email to match Firebase database structure
+        String sanitizedEmail = email.replace(".", ",");
+
+        // Directly reference the user entry in Firebase
+        usersRef.child(sanitizedEmail).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                callback.onResult(dataSnapshot.exists());
+                if (!dataSnapshot.exists()) {
+                    callback.onError("Email not found.");
+                    return;
+                }
+
+                // Retrieve security answers as a SecurityModel object
+                SecurityModel securityAnswers = dataSnapshot.child("securityAns").getValue(SecurityModel.class);
+                if (securityAnswers == null) {
+                    callback.onError("Security answers not found.");
+                    return;
+                }
+
+                // Convert user-provided answers to lowercase before checking
+                boolean isMatch = securityAnswers.isQuestions(
+                        ans1.trim().toLowerCase(),
+                        ans2.trim().toLowerCase(),
+                        ans3.trim().toLowerCase()
+                );
+
+                if (!isMatch) {
+                    callback.onError("Security answers do not match.");
+                    return;
+                }
+
+                // Check if passwords match
+                if (!newPassword.equals(confirmPassword)) {
+                    callback.onError("Passwords do not match.");
+                    return;
+                }
+
+                // Debugging log
+                System.out.println("Updating password for user: " + sanitizedEmail);
+
+                // Update password in Firebase
+                usersRef.child(sanitizedEmail).child("password").setValue(newPassword)
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                System.out.println("Password successfully updated in Firebase.");
+                                callback.onSuccess("Password updated successfully.");
+                            } else {
+                                System.out.println("Failed to update password: " + task.getException());
+                                callback.onError("Failed to update password: " + task.getException());
+                            }
+                        });
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                callback.onError(databaseError.getMessage());
+                callback.onError("Database error: " + databaseError.getMessage());
             }
         });
     }
+
+    public void loginUser(String email, String password, UserCallback callback) {
+        auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        callback.onSuccess("Login successful!");
+                    } else {
+                        callback.onError("Login failed: " + task.getException().getMessage());
+                    }
+                });
+    }
+
 
     private DatabaseReference getUserRef(String userId) {
         return usersRef.child(userId);
@@ -70,8 +135,9 @@ public class Users {
         return usersRef;
     }
 
-
-
+    public FirebaseAuth getAuth() {
+        return auth;
+    }
 
     public interface UserCallback {
         void onSuccess(String message);

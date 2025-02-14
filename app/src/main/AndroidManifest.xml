@@ -14,17 +14,13 @@
 
         <!-- Main Activity (Launcher) -->
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <!-- Login Activity -->
-        <activity android:name=".ui.LoginActivity"
-            android:exported="true" />
 
         <!-- Create Account Activity (Added this) -->
         <activity android:name=".ui.CreateAccount"
@@ -33,10 +29,6 @@
         <!-- Reset Password Activity -->
         <activity android:name=".ui.ResetPasswordActivity"
             android:exported="true" />
-
-        <!-- Forgot Password Activity -->
-        <activity android:name=".ui.ForgotPasswordActivity"
-            android:exported="true"/>
 
         <!-- Dashboard Activity -->
         <activity android:name=".ui.Dashboard"

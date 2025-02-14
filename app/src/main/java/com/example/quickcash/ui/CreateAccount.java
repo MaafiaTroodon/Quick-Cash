@@ -2,23 +2,27 @@ package com.example.quickcash.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.quickcash.R;
-import com.example.quickcash.model.UserModel;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.example.quickcash.core.Users;
+import com.example.quickcash.database.Firebase;
+import com.example.quickcash.model.SecurityModel;
+import com.example.quickcash.validator.Validator;
 
 public class CreateAccount extends AppCompatActivity {
 
     private EditText userName, email, password, confirmPassword, securityAnswer1, securityAnswer2, securityAnswer3;
     private Button createAccountButton;
     private TextView loginLink;
-    private DatabaseReference databaseReference;
+    private RadioGroup roleGroup; // RadioGroup for role selection
+    private Users users;
+    private Validator validator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,9 +39,12 @@ public class CreateAccount extends AppCompatActivity {
         securityAnswer3 = findViewById(R.id.securityAnswer3);
         createAccountButton = findViewById(R.id.buttonCreateAccount);
         loginLink = findViewById(R.id.textLoginLink);
+        roleGroup = findViewById(R.id.roleGroup); // Get the RadioGroup
 
-        // Initialize Firebase Database Reference
-        databaseReference = FirebaseDatabase.getInstance().getReference("Users");
+        // Initialize Users and Validator classes
+        Firebase firebase = new Firebase();
+        users = new Users(firebase);
+        validator = new Validator();
 
         // Set click listener for Create Account button
         createAccountButton.setOnClickListener(v -> createUserAccount());
@@ -55,13 +62,38 @@ public class CreateAccount extends AppCompatActivity {
         String userEmail = email.getText().toString().trim();
         String userPassword = password.getText().toString().trim();
         String confirmPass = confirmPassword.getText().toString().trim();
-        String userSecurityAnswer1 = securityAnswer1.getText().toString().trim();
-        String userSecurityAnswer2 = securityAnswer2.getText().toString().trim();
-        String userSecurityAnswer3 = securityAnswer3.getText().toString().trim();
+        String userSecurityAnswer1 = securityAnswer1.getText().toString().trim().toLowerCase();
+        String userSecurityAnswer2 = securityAnswer2.getText().toString().trim().toLowerCase();
+        String userSecurityAnswer3 = securityAnswer3.getText().toString().trim().toLowerCase();
 
-        if (username.isEmpty() || userEmail.isEmpty() || userPassword.isEmpty() || confirmPass.isEmpty() ||
-                userSecurityAnswer1.isEmpty() || userSecurityAnswer2.isEmpty() || userSecurityAnswer3.isEmpty()) {
-            Toast.makeText(this, "All fields are required!", Toast.LENGTH_SHORT).show();
+        // Get selected role
+        int selectedRoleId = roleGroup.getCheckedRadioButtonId();
+        if (selectedRoleId == -1) {
+            Toast.makeText(this, "Please select a role.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        RadioButton selectedRoleButton = findViewById(selectedRoleId);
+        String userRole = selectedRoleButton.getText().toString().trim(); // Get role text
+
+        // Validate inputs using Validator class
+        if (username.isEmpty()) {
+            Toast.makeText(this, "Username is required!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (validator.isEmptyEmailAddress(userEmail)) {
+            Toast.makeText(this, "Email is required!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!validator.isValidEmailAddress(userEmail)) {
+            Toast.makeText(this, "Invalid email format!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!validator.isValidPassword(userPassword)) {
+            Toast.makeText(this, "Password must be at least 8 characters and contain a special character!", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -70,19 +102,29 @@ public class CreateAccount extends AppCompatActivity {
             return;
         }
 
-        // Create UserModel instance and store security answers
-        UserModel user = new UserModel(username, userEmail, userPassword);
-        user.setSecurityAns(userSecurityAnswer1, userSecurityAnswer2, userSecurityAnswer3);
+        if (userSecurityAnswer1.isEmpty() || userSecurityAnswer2.isEmpty() || userSecurityAnswer3.isEmpty()) {
+            Toast.makeText(this, "All security questions must be answered!", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        // Save user data in Firebase
-        DatabaseReference userRef = databaseReference.push();  // Generates unique user ID
-        userRef.setValue(user).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Toast.makeText(CreateAccount.this, "Account Created Successfully!", Toast.LENGTH_SHORT).show();
+        if (!validator.isValidRole(userRole)) {
+            Toast.makeText(this, "Invalid Role", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Call createUser method from Users class
+        SecurityModel securityModel = new SecurityModel(userSecurityAnswer1, userSecurityAnswer2, userSecurityAnswer3);
+        users.createUser(username, userPassword, userEmail, userRole, securityModel, new Users.UserCallback() {
+            @Override
+            public void onSuccess(String message) {
+                Toast.makeText(CreateAccount.this, "Role: " + userRole + "\n" + message, Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(CreateAccount.this, LoginActivity.class));
                 finish();
-            } else {
-                Toast.makeText(CreateAccount.this, "Failed to create account!", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(String error) {
+                Toast.makeText(CreateAccount.this, "Error: " + error, Toast.LENGTH_SHORT).show();
             }
         });
     }
