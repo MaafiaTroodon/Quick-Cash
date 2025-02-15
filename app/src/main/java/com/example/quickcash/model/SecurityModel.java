@@ -31,4 +31,10 @@ public class SecurityModel {
                 this.question2.equals(q2) &&
                 this.question3.equals(q3));
     }
+
+    public boolean isEqual(SecurityModel securityModel) {
+        return securityModel.getQuestion1().equals(this.question1) &&
+                securityModel.getQuestion2().equals(this.question2) &&
+                securityModel.getQuestion3().equals(this.question3);
+    }
 }
