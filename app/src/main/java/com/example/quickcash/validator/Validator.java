@@ -28,5 +28,11 @@ public class Validator {
         return !role.equals("Select your role"); //"Select your role" may vary depending on the default hint message.
     }
 
+    public boolean isValidPage(String pageName) {
+        if (pageName == null) {
+            return false;
+        }
+        return pageName.equals("Creator") || pageName.equals("Searcher");
+    }
 
 }

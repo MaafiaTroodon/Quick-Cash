@@ -31,7 +31,11 @@
             android:exported="true" />
 
         <!-- Dashboard Activity -->
-        <activity android:name=".ui.Dashboard"
+        <activity android:name=".ui.CreatorDashboard"
+            android:exported="true"/>
+
+        <!-- Searcher Dashboard Activity -->
+        <activity android:name=".ui.SearcherDashboard"
             android:exported="true"/>
 
         <!-- Login Activity Activity -->

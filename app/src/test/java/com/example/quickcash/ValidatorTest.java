@@ -3,9 +3,14 @@ package com.example.quickcash;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import androidx.appcompat.app.AppCompatActivity;
+
 
 import static org.junit.Assert.*;
 
+import com.example.quickcash.core.Users;
+import com.example.quickcash.database.Firebase;
+import com.example.quickcash.model.UserModel;
 import com.example.quickcash.validator.Validator;
 
 public class ValidatorTest {
@@ -46,5 +51,10 @@ public class ValidatorTest {
         //incomplete. Roles may vary depending on the role names.
         assertTrue(validator.isValidRole("Creator"));
         assertTrue(validator.isValidRole("Searcher"));
+    }
+    @Test
+    public void checkIfPageIsValid() {
+        assertTrue(validator.isValidPage("Creator"));
+        assertTrue(validator.isValidPage("Searcher"));
     }
 }

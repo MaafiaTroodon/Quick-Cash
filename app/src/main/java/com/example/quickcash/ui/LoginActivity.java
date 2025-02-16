@@ -54,10 +54,21 @@ public class LoginActivity extends AppCompatActivity {
 
         // Call loginUser() from Users class
         users.loginUser(email, password, new Users.UserCallback() {
+
             @Override
-            public void onSuccess(String message) {
-                Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(LoginActivity.this, Dashboard.class);
+            public void onSuccess(String role) {
+                Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
+
+                Intent intent;
+                if ("creator".equalsIgnoreCase(role)) {  // Use equalsIgnoreCase
+                    intent = new Intent(LoginActivity.this, CreatorDashboard.class);
+                } else if ("searcher".equalsIgnoreCase(role)) {
+                    intent = new Intent(LoginActivity.this, SearcherDashboard.class);
+                } else {
+                    // Handle unknown roles
+                    intent = new Intent(LoginActivity.this, SearcherDashboard.class);
+                }
+
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 finish();
