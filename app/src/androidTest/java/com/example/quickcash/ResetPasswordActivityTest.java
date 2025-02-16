@@ -15,7 +15,11 @@ import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.Espresso.onView;
+import androidx.test.espresso.intent.Intents;
 
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +33,16 @@ public class ResetPasswordActivityTest {
 
     @Rule
     public ActivityScenarioRule<ResetPasswordActivity> activityRule = new ActivityScenarioRule<>(ResetPasswordActivity.class);
+
+    @Before
+    public void setUp() {
+        Intents.init();
+    }
+
+    @After
+    public void tearDown() {
+        Intents.release();
+    }
 
     @Test
     public void testUIElementsDisplayed() {
