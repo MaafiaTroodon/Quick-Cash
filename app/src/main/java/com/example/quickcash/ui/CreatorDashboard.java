@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.quickcash.R;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class Dashboard extends AppCompatActivity {
+public class CreatorDashboard extends AppCompatActivity {
 
     private TextView welcomeText;
     private Button logoutButton;
@@ -20,7 +20,7 @@ public class Dashboard extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_dashboard);
+        setContentView(R.layout.activity_creatordashboard);
 
         welcomeText = findViewById(R.id.heading);
         logoutButton = findViewById(R.id.LogOut);
@@ -28,13 +28,13 @@ public class Dashboard extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
 
         logoutButton.setOnClickListener(v -> {
-            new AlertDialog.Builder(Dashboard.this)
+            new AlertDialog.Builder(CreatorDashboard.this)
                     .setMessage("Are you sure you want to log out?")
                     .setCancelable(false)
                     .setPositiveButton("Yes", (dialog, id) -> {
                         auth.signOut();
-                        Toast.makeText(Dashboard.this, "Logged out successfully!", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(Dashboard.this, LoginActivity.class));
+                        Toast.makeText(CreatorDashboard.this, "Logged out successfully!", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(CreatorDashboard.this, LoginActivity.class));
                         finish();
                     })
                     .setNegativeButton("No", (dialog, id) -> dialog.dismiss())
