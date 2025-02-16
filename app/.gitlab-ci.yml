@@ -1,0 +1,75 @@
+image: eclipse-temurin:17-jdk-jammy
+
+variables:
+  ANDROID_COMPILE_SDK: "35"
+  ANDROID_BUILD_TOOLS: "33.0.2"
+  ANDROID_SDK_TOOLS: "9477386"
+  ANDROID_ABI: "x86_64"
+  ANDROID_TARGET: "google_apis_playstore"
+
+before_script:
+  - apt-get --quiet update --yes
+  - apt-get --quiet install --yes wget unzip curl
+  - export ANDROID_HOME="${PWD}/android-sdk-root"
+  - install -d $ANDROID_HOME
+  - wget --no-verbose --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS}_latest.zip
+  - unzip -q -d "$ANDROID_HOME/cmdline-tools" "$ANDROID_HOME/cmdline-tools.zip"
+  - mv -T "$ANDROID_HOME/cmdline-tools/cmdline-tools" "$ANDROID_HOME/cmdline-tools/tools"
+  - export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/cmdline-tools/tools/bin
+  - sdkmanager --version
+  - yes | sdkmanager --licenses > /dev/null || true
+  - sdkmanager "platforms;android-${ANDROID_COMPILE_SDK}"
+  - sdkmanager "platform-tools"
+  - sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}"
+  - sdkmanager "system-images;android-${ANDROID_COMPILE_SDK};$ANDROID_TARGET;$ANDROID_ABI"
+  - sdkmanager "emulator"
+  - chmod +x ./gradlew
+
+stages:
+  - build
+  - test
+
+lintDebug:
+  stage: build
+  script:
+    - ./gradlew -Pci --console=plain :app:lintDebug -PbuildDir=lint
+  artifacts:
+    paths:
+      - app/lint/reports/lint-results-debug.html
+    expose_as: "lint-report"
+    when: always
+
+assembleDebug:
+  stage: build
+  script:
+    - ./gradlew assembleDebug
+  artifacts:
+    paths:
+      - app/build/outputs/
+
+debugUnitTests:
+  needs: [lintDebug, assembleDebug]
+  stage: test
+  script:
+    - ./gradlew -Pci --console=plain :app:testDebug
+  artifacts:
+    reports:
+      junit: app/build/test-results/**/*.xml
+
+instrumentedTests:
+  needs: [assembleDebug]
+  stage: test
+  before_script:
+    - export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$PATH
+    - echo "Creating AVD"
+    - avdmanager create avd -n test -k "system-images;android-${ANDROID_COMPILE_SDK};$ANDROID_TARGET;$ANDROID_ABI" --device "pixel_4" --force
+    - echo "Starting AVD"
+    - nohup emulator -avd test -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect -accel on &
+    - sleep 60 # Give the emulator time to start
+    - adb devices
+  script:
+    - ./gradlew connectedDebugAndroidTest
+  artifacts:
+    reports:
+      junit: app/build/outputs/androidTest-results/connected/**/*.xml
+
