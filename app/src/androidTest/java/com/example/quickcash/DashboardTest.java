@@ -17,8 +17,10 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 
 import com.example.quickcash.R;
-import com.example.quickcash.ui.Dashboard;
+import com.example.quickcash.ui.CreatorDashboard;
+import com.example.quickcash.ui.SearcherDashboard;
 import com.example.quickcash.ui.LoginActivity;
+import com.example.quickcash.ui.SearcherDashboard;
 import com.google.firebase.auth.FirebaseAuth;
 
 import org.junit.After;
@@ -31,13 +33,15 @@ import org.junit.runner.RunWith;
 public class DashboardTest {
 
     @Rule
-    public ActivityTestRule<Dashboard> activityRule = new ActivityTestRule<>(Dashboard.class, true, false);
+    public ActivityTestRule<SearcherDashboard> activitySearcherRule = new ActivityTestRule<>(SearcherDashboard.class, true, false);
+    public ActivityTestRule<CreatorDashboard> activityCreatorRule = new ActivityTestRule<>(CreatorDashboard.class, true, false);
 
     @Before
     public void setUp() {
         Intents.init();
         FirebaseAuth.getInstance().signInAnonymously(); // Ensure user is logged in before test
-        activityRule.launchActivity(new Intent());
+        activitySearcherRule.launchActivity(new Intent());
+        activityCreatorRule.launchActivity(new Intent());
     }
 
     @After
