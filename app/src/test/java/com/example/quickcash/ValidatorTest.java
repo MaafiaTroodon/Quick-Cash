@@ -8,16 +8,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import static org.junit.Assert.*;
 
-import com.example.quickcash.core.Users;
-import com.example.quickcash.database.Firebase;
-import com.example.quickcash.model.UserModel;
-import com.example.quickcash.validator.Validator;
+
+import com.example.quickcash.validator.UserValidator;
 
 public class ValidatorTest {
-    Validator validator;
+    UserValidator validator;
 
     @Before
-    public void setup() { validator = new Validator(); }
+    public void setup() { validator = new UserValidator();}
 
     @Test
     public void checkIfEmailIsEmpty() {
