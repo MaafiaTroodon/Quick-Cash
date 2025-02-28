@@ -7,7 +7,7 @@ import androidx.test.filters.LargeTest;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.assertion.ViewAssertions;
 
-import com.example.quickcash.ui.Dashboard;
+import com.example.quickcash.ui.CreatorDashboard;
 import com.example.quickcash.ui.LoginActivity;
 
 import static androidx.test.espresso.action.ViewActions.click;
@@ -49,7 +49,7 @@ public class LoginActivityTest {
         onView(withId(R.id.buttonLogin)).perform(click());
 
         // Verify that the Dashboard activity was NOT started
-        intended(hasComponent(Dashboard.class.getName()), Intents.times(0));
+        intended(hasComponent(CreatorDashboard.class.getName()), Intents.times(0));
 
         // Release Intents
         Intents.release();
