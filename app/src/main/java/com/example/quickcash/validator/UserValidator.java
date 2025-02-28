@@ -1,6 +1,6 @@
 package com.example.quickcash.validator;
 
-public class Validator {
+public class UserValidator {
     public boolean isEmptyEmailAddress(String emailAddress) {
         return emailAddress.trim().isEmpty();
     }

@@ -3,7 +3,6 @@ package com.example.quickcash;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import androidx.appcompat.app.AppCompatActivity;
 
 
 import static org.junit.Assert.*;
@@ -11,7 +10,7 @@ import static org.junit.Assert.*;
 
 import com.example.quickcash.validator.UserValidator;
 
-public class ValidatorTest {
+public class UserValidatorTest {
     UserValidator validator;
 
     @Before
