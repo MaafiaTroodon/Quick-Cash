@@ -13,7 +13,7 @@ import com.example.quickcash.R;
 import com.example.quickcash.core.Users;
 import com.example.quickcash.database.Firebase;
 import com.example.quickcash.model.SecurityModel;
-import com.example.quickcash.validator.Validator;
+import com.example.quickcash.validator.UserValidator;
 
 public class CreateAccount extends AppCompatActivity {
 
@@ -22,7 +22,7 @@ public class CreateAccount extends AppCompatActivity {
     private TextView loginLink;
     private RadioGroup roleGroup; // RadioGroup for role selection
     private Users users;
-    private Validator validator;
+    private UserValidator validator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +44,7 @@ public class CreateAccount extends AppCompatActivity {
         // Initialize Users and Validator classes
         Firebase firebase = new Firebase();
         users = new Users(firebase);
-        validator = new Validator();
+        validator = new UserValidator();
 
         // Set click listener for Create Account button
         createAccountButton.setOnClickListener(v -> createUserAccount());
