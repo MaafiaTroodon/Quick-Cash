@@ -11,14 +11,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.quickcash.R;
 import com.example.quickcash.core.Users;
 import com.example.quickcash.database.Firebase;
-import com.example.quickcash.validator.Validator;
+import com.example.quickcash.validator.UserValidator;
 
 public class ResetPasswordActivity extends AppCompatActivity {
 
     private EditText emailInput, answer1, answer2, answer3, newPassword, confirmPassword;
     private Button submitButton, backButton;
     private Users users;
-    private Validator validator;
+    private UserValidator validator;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -38,7 +38,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
         Firebase firebase = new Firebase();
         this.users = new Users(firebase);
-        this.validator = new Validator();
+        this.validator = new UserValidator();
 
         // Set click listener for submit button
         submitButton.setOnClickListener(v -> validateAndSubmit());

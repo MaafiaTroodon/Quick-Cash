@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="job_types">
+        <item>Select Job Type</item>
+        <item>Full-Time</item>
+        <item>Part-Time</item>
+        <item>Contract</item>
+        <item>Freelance</item>
+        <item>Internship</item>
+        <item>Temporary</item>
+        <item>Volunteer</item>
+    </string-array>
+</resources>

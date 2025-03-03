@@ -14,7 +14,7 @@ public class UserValidatorTest {
     UserValidator validator;
 
     @Before
-    public void setup() { validator = new UserValidator();}
+    public void setup() { validator = new UserValidator(); }
 
     @Test
     public void checkIfEmailIsEmpty() {
