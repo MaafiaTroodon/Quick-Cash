@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.quickcash.R;
 import com.example.quickcash.core.Users;
 import com.example.quickcash.database.Firebase;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 
 public class LoginActivity extends AppCompatActivity {
     private EditText emailEditText, passwordEditText;
@@ -59,19 +61,33 @@ public class LoginActivity extends AppCompatActivity {
             public void onSuccess(String role) {
                 Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
 
-                Intent intent;
-                if ("creator".equalsIgnoreCase(role)) {  // Use equalsIgnoreCase
-                    intent = new Intent(LoginActivity.this, CreatorDashboard.class);
-                } else if ("searcher".equalsIgnoreCase(role)) {
-                    intent = new Intent(LoginActivity.this, SearcherDashboard.class);
-                } else {
-                    // Handle unknown roles
-                    intent = new Intent(LoginActivity.this, SearcherDashboard.class);
-                }
+                // Get the user's location
+                FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(LoginActivity.this);
 
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                finish();
+                fusedLocationClient.getLastLocation()
+                        .addOnSuccessListener(location -> {
+                            if (location != null) {
+                                double latitude = location.getLatitude();
+                                double longitude = location.getLongitude();
+
+                                // Pass location to the dashboard
+                                Intent intent;
+                                if ("creator".equalsIgnoreCase(role)) {
+                                    intent = new Intent(LoginActivity.this, CreatorDashboard.class);
+                                } else {
+                                    intent = new Intent(LoginActivity.this, SearcherDashboard.class);
+                                }
+
+                                intent.putExtra("latitude", latitude);
+                                intent.putExtra("longitude", longitude);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+                                finish();
+                            } else {
+                                Toast.makeText(LoginActivity.this, "Failed to get location", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .addOnFailureListener(e -> Toast.makeText(LoginActivity.this, "Error fetching location", Toast.LENGTH_SHORT).show());
             }
 
             @Override

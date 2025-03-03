@@ -25,7 +25,13 @@ public class SearcherDashboard extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
 
-        //Write code to read the database and perform related operations after Us2 job creation form branch is merged
+        // Retrieve location data from Intent
+        double latitude = getIntent().getDoubleExtra("latitude", 0.0);
+        double longitude = getIntent().getDoubleExtra("longitude", 0.0);
+
+        // Display location
+        TextView locationText = findViewById(R.id.locationText);
+        locationText.setText("Your Location: " + latitude + ", " + longitude);
 
         logoutButton.setOnClickListener(v -> {
             auth.signOut();
@@ -34,4 +40,5 @@ public class SearcherDashboard extends AppCompatActivity {
             finish();
         });
     }
+
 }
