@@ -25,6 +25,8 @@ public class SearcherDashboard extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
 
+        //Write code to read the database and perform related operations after Us2 job creation form branch is merged
+
         logoutButton.setOnClickListener(v -> {
             auth.signOut();
             Toast.makeText(SearcherDashboard.this, "Logged out successfully!", Toast.LENGTH_SHORT).show();
