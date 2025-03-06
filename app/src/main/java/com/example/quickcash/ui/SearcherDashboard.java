@@ -11,7 +11,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class SearcherDashboard extends AppCompatActivity {
 
-    private TextView welcomeText;
+    private TextView welcomeText, locationText;
     private Button logoutButton;
     private FirebaseAuth auth;
 
@@ -22,6 +22,7 @@ public class SearcherDashboard extends AppCompatActivity {
 
         welcomeText = findViewById(R.id.heading);
         logoutButton = findViewById(R.id.LogOut);
+        locationText = findViewById(R.id.locationText);
 
         auth = FirebaseAuth.getInstance();
 
@@ -30,7 +31,6 @@ public class SearcherDashboard extends AppCompatActivity {
         double longitude = getIntent().getDoubleExtra("longitude", 0.0);
 
         // Display location
-        TextView locationText = findViewById(R.id.locationText);
         locationText.setText("Your Location: " + latitude + ", " + longitude);
 
         logoutButton.setOnClickListener(v -> {
@@ -40,5 +40,4 @@ public class SearcherDashboard extends AppCompatActivity {
             finish();
         });
     }
-
 }
