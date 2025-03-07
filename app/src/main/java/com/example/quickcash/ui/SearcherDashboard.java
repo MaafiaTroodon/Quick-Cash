@@ -1,37 +1,75 @@
 package com.example.quickcash.ui;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.quickcash.R;
-import com.google.firebase.auth.FirebaseAuth;
+import com.example.quickcash.model.JobModel;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class SearcherDashboard extends AppCompatActivity {
+    private RecyclerView recyclerView;
+    public JobAdapter jobAdapter;
+    private List<JobModel> jobList;
 
-    private TextView welcomeText;
-    private Button logoutButton;
-    private FirebaseAuth auth;
+    private DatabaseReference jobsRef;
+
+    public DatabaseReference getJobsRef() {
+        return jobsRef;
+    }
+
+    public void setJobsRef(DatabaseReference jobsRef) {
+        this.jobsRef = jobsRef;
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_searcherdashboard);
 
-        welcomeText = findViewById(R.id.heading);
-        logoutButton = findViewById(R.id.LogOut);
+        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setHasFixedSize(false); // Ensures RecyclerView measures dynamically
+        recyclerView.setNestedScrollingEnabled(true); // Enables scrolling
 
-        auth = FirebaseAuth.getInstance();
+        jobList = new ArrayList<>();
+        jobAdapter = new JobAdapter(jobList);
+        recyclerView.setAdapter(jobAdapter);
 
-        //Write code to read the database and perform related operations after Us2 job creation form branch is merged
+        jobsRef = FirebaseDatabase.getInstance().getReference("Jobs");
 
-        logoutButton.setOnClickListener(v -> {
-            auth.signOut();
-            Toast.makeText(SearcherDashboard.this, "Logged out successfully!", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(SearcherDashboard.this, LoginActivity.class));
-            finish();
+        jobsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<JobModel> updatedJobs = new ArrayList<>();
+                for (DataSnapshot jobSnapshot : snapshot.getChildren()) {
+                    JobModel job = jobSnapshot.getValue(JobModel.class);
+                    updatedJobs.add(job);
+                }
+                jobAdapter.updateJobs(updatedJobs);
+
+                Log.d("JobList", "Total jobs fetched: " + updatedJobs.size());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("Firebase", "Failed to read jobs", error.toException());
+            }
         });
     }
 }

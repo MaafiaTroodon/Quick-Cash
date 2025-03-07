@@ -23,6 +23,13 @@ public class JobModel {
         this.EmployerEmail = employerEmail;
     }
 
+    public JobModel(String title, String location, String salaryText,String company) {
+        this.title = title;
+        this.location = location;
+        this.salaryText = salaryText;
+        this.company = company;
+    }
+
     // 🔹 Getters for Firebase serialization
     public String getTitle() {
         return title;
