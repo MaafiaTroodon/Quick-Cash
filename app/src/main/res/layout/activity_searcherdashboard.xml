@@ -3,14 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".ui.SearcherDashboard">
+
 
     <TextView
         android:id="@+id/heading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="170dp"
-        android:layout_marginTop="75dp"
+        android:layout_marginTop="52dp"
         android:layout_marginEnd="170dp"
         android:background="#673AB7"
         android:backgroundTint="#673AB7"
@@ -25,313 +27,30 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:background="@android:color/white"
+        android:padding="10dp"
+        app:layout_constraintTop_toBottomOf="@id/heading"
+        app:layout_constraintBottom_toTopOf="@id/LogOut"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Logout Button -->
     <Button
         android:id="@+id/LogOut"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="572dp"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/square_button"
         android:padding="10dp"
         android:text="Logout"
         android:textColor="#FFFFFF"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/heading" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
-
-    <ScrollView
-        android:id="@+id/ListSCroll"
-        android:layout_width="410dp"
-        android:layout_height="538dp"
-        android:layout_marginTop="32dp"
-        app:layout_constraintBottom_toTopOf="@+id/LogOut"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/heading">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/List1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/border"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                    android:id="@+id/CompanyName1"
-                    android:layout_width="383dp"
-                    android:layout_height="28dp"
-                    android:layout_marginTop="8dp"
-                    android:text="Name"
-                    android:textSize="24sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/Type1"
-                    android:layout_width="383dp"
-                    android:layout_height="28dp"
-                    android:text="Full-Time"
-                    android:textSize="24sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/CompanyName1" />
-
-                <TextView
-                    android:id="@+id/Location1"
-                    android:layout_width="383dp"
-                    android:layout_height="28dp"
-                    android:text="Halifax, NS"
-                    android:textSize="24sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/Type1" />
-
-                <TextView
-                    android:id="@+id/Salary1"
-                    android:layout_width="383dp"
-                    android:layout_height="28dp"
-                    android:layout_marginBottom="8dp"
-                    android:text="30.8"
-                    android:textSize="24sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/Location1" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/List2"
-                android:background="@drawable/border"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="5dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/List1">
-
-                <TextView
-                    android:id="@+id/CompanyName2"
-                    android:layout_width="383dp"
-                    android:layout_height="28dp"
-                    android:layout_marginTop="8dp"
-                    android:text="Name"
-                    android:textSize="24sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/Type2"
-                    android:layout_width="383dp"
-                    android:layout_height="28dp"
-                    android:text="Full-Time"
-                    android:textSize="24sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/CompanyName2" />
-
-                <TextView
-                    android:id="@+id/Location2"
-                    android:layout_width="383dp"
-                    android:layout_height="28dp"
-                    android:text="Halifax, NS"
-                    android:textSize="24sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/Type2" />
-
-                <TextView
-                    android:id="@+id/Salary2"
-                    android:layout_width="383dp"
-                    android:layout_height="28dp"
-                    android:layout_marginBottom="8dp"
-                    android:text="30.8"
-                    android:textSize="24sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/Location2" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/List3"
-                android:background="@drawable/border"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="5dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/List2">
-
-                <TextView
-                    android:id="@+id/CompanyName3"
-                    android:layout_width="383dp"
-                    android:layout_height="28dp"
-                    android:layout_marginTop="8dp"
-                    android:text="Name"
-                    android:textSize="24sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/Type3"
-                    android:layout_width="383dp"
-                    android:layout_height="28dp"
-                    android:text="Full-Time"
-                    android:textSize="24sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/CompanyName3" />
-
-                <TextView
-                    android:id="@+id/Location3"
-                    android:layout_width="383dp"
-                    android:layout_height="28dp"
-                    android:text="Halifax, NS"
-                    android:textSize="24sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/Type3" />
-
-                <TextView
-                    android:id="@+id/Salary3"
-                    android:layout_width="383dp"
-                    android:layout_height="28dp"
-                    android:layout_marginBottom="8dp"
-                    android:text="30.8"
-                    android:textSize="24sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/Location3" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/List4"
-                android:background="@drawable/border"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="5dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/List3">
-
-                <TextView
-                    android:id="@+id/CompanyName4"
-                    android:layout_width="383dp"
-                    android:layout_height="28dp"
-                    android:layout_marginTop="8dp"
-                    android:text="Name"
-                    android:textSize="24sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/Type4"
-                    android:layout_width="383dp"
-                    android:layout_height="28dp"
-                    android:text="Full-Time"
-                    android:textSize="24sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/CompanyName4" />
-
-                <TextView
-                    android:id="@+id/Location4"
-                    android:layout_width="383dp"
-                    android:layout_height="28dp"
-                    android:text="Halifax, NS"
-                    android:textSize="24sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/Type4" />
-
-                <TextView
-                    android:id="@+id/Salary4"
-                    android:layout_width="383dp"
-                    android:layout_height="28dp"
-                    android:layout_marginBottom="8dp"
-                    android:text="30.8"
-                    android:textSize="24sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/Location4" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/List5"
-                android:background="@drawable/border"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="5dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/List4">
-
-                <TextView
-                    android:id="@+id/CompanyName5"
-                    android:layout_width="383dp"
-                    android:layout_height="28dp"
-                    android:layout_marginTop="8dp"
-                    android:text="Name"
-                    android:textSize="24sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/Type5"
-                    android:layout_width="383dp"
-                    android:layout_height="28dp"
-                    android:text="Full-Time"
-                    android:textSize="24sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/CompanyName5" />
-
-                <TextView
-                    android:id="@+id/Location5"
-                    android:layout_width="383dp"
-                    android:layout_height="28dp"
-                    android:text="Halifax, NS"
-                    android:textSize="24sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/Type5" />
-
-                <TextView
-                    android:id="@+id/Salary5"
-                    android:layout_width="383dp"
-                    android:layout_height="28dp"
-                    android:layout_marginBottom="8dp"
-                    android:text="30.8"
-                    android:textSize="24sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/Location5" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </LinearLayout>
-    </ScrollView>
-    <![CDATA[
-
-
-
-    >
-
-
-]]>
 </androidx.constraintlayout.widget.ConstraintLayout>
