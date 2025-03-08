@@ -3,6 +3,8 @@ package com.example.quickcash.ui;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -18,6 +20,10 @@ import androidx.core.app.ActivityCompat;
 
 import com.example.quickcash.R;
 import com.google.firebase.auth.FirebaseAuth;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 public class CreatorDashboard extends AppCompatActivity {
 
@@ -75,7 +81,12 @@ public class CreatorDashboard extends AppCompatActivity {
             public void onLocationChanged(Location location) {
                 double latitude = location.getLatitude();
                 double longitude = location.getLongitude();
-                locationText.setText("Your Location: " + latitude + ", " + longitude); // Display location
+
+                // Convert coordinates to address
+                String address = getAddressFromCoordinates(latitude, longitude);
+
+                // Display the address
+                locationText.setText("Your Location: " + address);
             }
 
             @Override
@@ -87,6 +98,20 @@ public class CreatorDashboard extends AppCompatActivity {
             @Override
             public void onProviderDisabled(String provider) {}
         };
+    }
+
+    private String getAddressFromCoordinates(double latitude, double longitude) {
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            if (addresses != null && !addresses.isEmpty()) {
+                Address address = addresses.get(0);
+                return address.getAddressLine(0);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "Unable to fetch address";
     }
 
     // Check permissions and start location updates

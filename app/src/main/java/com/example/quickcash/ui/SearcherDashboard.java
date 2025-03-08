@@ -1,6 +1,8 @@
 package com.example.quickcash.ui;
 
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
@@ -8,6 +10,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.quickcash.R;
 import com.google.firebase.auth.FirebaseAuth;
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 public class SearcherDashboard extends AppCompatActivity {
 
@@ -30,8 +35,11 @@ public class SearcherDashboard extends AppCompatActivity {
         double latitude = getIntent().getDoubleExtra("latitude", 0.0);
         double longitude = getIntent().getDoubleExtra("longitude", 0.0);
 
-        // Display location
-        locationText.setText("Your Location: " + latitude + ", " + longitude);
+        // Convert coordinates to address
+        String address = getAddressFromCoordinates(latitude, longitude);
+
+        // Display address
+        locationText.setText("Your Location: " + address);
 
         logoutButton.setOnClickListener(v -> {
             auth.signOut();
@@ -39,5 +47,19 @@ public class SearcherDashboard extends AppCompatActivity {
             startActivity(new Intent(SearcherDashboard.this, LoginActivity.class));
             finish();
         });
+    }
+
+    private String getAddressFromCoordinates(double latitude, double longitude) {
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            if (addresses != null && !addresses.isEmpty()) {
+                Address address = addresses.get(0);
+                return address.getAddressLine(0);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "Unable to fetch address";
     }
 }
