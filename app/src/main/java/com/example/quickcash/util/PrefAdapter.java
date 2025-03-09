@@ -1,8 +1,9 @@
-package com.example.quickcash.ui;
+package com.example.quickcash.util;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,10 +14,11 @@ import com.example.quickcash.model.JobModel;
 
 import java.util.List;
 
-public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobViewHolder> {
+public class PrefAdapter extends RecyclerView.Adapter<PrefAdapter.JobViewHolder> {
     public List<JobModel> jobList;
+    ButtonClickListener listener;
 
-    public JobAdapter(List<JobModel> jobList) {
+    public PrefAdapter(List<JobModel> jobList) {
         this.jobList = jobList;
     }
 
@@ -24,7 +26,7 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobViewHolder> {
     @NonNull
     @Override
     public JobViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_recycler, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_recycler_for_pref, parent, false);
         return new JobViewHolder(view);
     }
 
@@ -35,6 +37,7 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobViewHolder> {
         holder.company.setText(job.getCompany());
         holder.location.setText(job.getLocation());
         holder.salary.setText("$" + job.getSalaryText());
+        holder.prefer.setText("Unprefer");
     }
 
 
@@ -43,16 +46,21 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobViewHolder> {
         return jobList.size();
     }
 
+    public JobModel getItem(int position) {
+        return this.jobList.get(position);
+    }
+
     public void updateJobs(List<JobModel> jobs) {
         this.jobList = jobs;
         notifyDataSetChanged();
     }
 
-    public static class JobViewHolder extends RecyclerView.ViewHolder {
+    public class JobViewHolder extends RecyclerView.ViewHolder {
         public TextView title;
         public TextView company;
         public TextView location;
         public TextView salary;
+        public Button prefer;
 
         public JobViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -60,6 +68,16 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobViewHolder> {
             company = itemView.findViewById(R.id.companyName);
             location = itemView.findViewById(R.id.jobLocation);
             salary = itemView.findViewById(R.id.salaryText);
+            prefer = itemView.findViewById(R.id.preferredListButton);
+            prefer.setOnClickListener(view -> listener.onItemClick(view, getAdapterPosition()));
         }
+    }
+    /*onClickListener*/
+    public void setItemClickListener(ButtonClickListener listener){
+        this.listener=listener;
+    }
+
+    public interface ButtonClickListener {
+        public void onItemClick(View view, int position);
     }
 }
