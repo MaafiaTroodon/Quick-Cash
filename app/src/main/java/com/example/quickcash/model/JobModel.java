@@ -11,6 +11,13 @@ public class JobModel {
 
     // 🔹 No-argument constructor (Required by Firebase)
     public JobModel() {
+        this.title = "title";
+        this.description = "description";
+        this.location = "location";
+        this.type = "type";
+        this.salaryText = "salaryText";
+        this.company = "company";
+        this.EmployerEmail = "employerEmail";
     }
 
     public JobModel(String title, String description, String location, String type, String salaryText, String company, String employerEmail) {
