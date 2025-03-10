@@ -1,7 +1,7 @@
 package com.example.quickcash.ui;
 
-import android.Manifest;
 import android.content.Intent;
+import android.Manifest; // Import for permissions
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -19,8 +19,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.example.quickcash.R;
+import com.example.quickcash.ui.CreateJobPage;
+import com.example.quickcash.ui.LoginActivity;
 import com.google.firebase.auth.FirebaseAuth;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -44,7 +45,7 @@ public class CreatorDashboard extends AppCompatActivity {
         welcomeText = findViewById(R.id.heading);
         logoutButton = findViewById(R.id.LogOut);
         jobCreationButton = findViewById(R.id.jobCreationButton);
-        locationText = findViewById(R.id.locationText); // TextView to show location
+        locationText = findViewById(R.id.locationText);
 
         auth = FirebaseAuth.getInstance();
 
@@ -74,7 +75,6 @@ public class CreatorDashboard extends AppCompatActivity {
         checkLocationPermissionAndStartUpdates();
     }
 
-    // Initialize LocationListener
     private void initializeLocationListener() {
         locationListener = new LocationListener() {
             @Override
@@ -114,7 +114,6 @@ public class CreatorDashboard extends AppCompatActivity {
         return "Unable to fetch address";
     }
 
-    // Check permissions and start location updates
     private void checkLocationPermissionAndStartUpdates() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
@@ -123,7 +122,6 @@ public class CreatorDashboard extends AppCompatActivity {
         }
     }
 
-    // Start receiving location updates
     private void startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
@@ -131,7 +129,6 @@ public class CreatorDashboard extends AppCompatActivity {
         }
     }
 
-    // Handles the result of location permission request
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -142,10 +139,10 @@ public class CreatorDashboard extends AppCompatActivity {
         }
     }
 
-    // Stops location updates when the activity is stopped
     @Override
     protected void onStop() {
         super.onStop();
         locationManager.removeUpdates(locationListener);
     }
 }
+

@@ -7,9 +7,13 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.quickcash.R;
+import com.example.quickcash.ui.LoginActivity;
 import com.google.firebase.auth.FirebaseAuth;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -63,3 +67,4 @@ public class SearcherDashboard extends AppCompatActivity {
         return "Unable to fetch address";
     }
 }
+
