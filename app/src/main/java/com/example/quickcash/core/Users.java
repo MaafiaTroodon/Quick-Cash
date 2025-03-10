@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.example.quickcash.database.Firebase;
 import com.example.quickcash.model.JobModel;
+import com.example.quickcash.model.PreferEmployerModel;
 import com.example.quickcash.model.SecurityModel;
 import com.example.quickcash.model.UserModel;
 import com.google.firebase.auth.FirebaseAuth;
@@ -145,7 +146,7 @@ public class Users {
                 });
     }
 
-    public void setPreferredList(String email, List<JobModel> newPreferredJobs, UserCallback callback) {
+    public void setPreferredList(String email, List<PreferEmployerModel> newPreferredJobs, UserCallback callback) {
         // Sanitize email to match Firebase database structure
         String sanitizedEmail = email.replace(".", ",");
         usersRef.child(sanitizedEmail).addListenerForSingleValueEvent(new ValueEventListener() {

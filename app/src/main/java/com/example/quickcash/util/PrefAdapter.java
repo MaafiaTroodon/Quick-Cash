@@ -11,14 +11,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quickcash.R;
 import com.example.quickcash.model.JobModel;
+import com.example.quickcash.model.PreferEmployerModel;
 
 import java.util.List;
 
 public class PrefAdapter extends RecyclerView.Adapter<PrefAdapter.JobViewHolder> {
-    public List<JobModel> jobList;
+    public List<PreferEmployerModel> jobList;
     ButtonClickListener listener;
 
-    public PrefAdapter(List<JobModel> jobList) {
+    public PrefAdapter(List<PreferEmployerModel> jobList) {
         this.jobList = jobList;
     }
 
@@ -32,11 +33,10 @@ public class PrefAdapter extends RecyclerView.Adapter<PrefAdapter.JobViewHolder>
 
     @Override
     public void onBindViewHolder(@NonNull JobViewHolder holder, int position) {
-        JobModel job = jobList.get(position);
-        holder.title.setText(job.getTitle());
+        PreferEmployerModel job = jobList.get(position);
+        holder.employerEmail.setText(job.getEmployerEmail());
         holder.company.setText(job.getCompany());
-        holder.location.setText(job.getLocation());
-        holder.salary.setText("$" + job.getSalaryText());
+        holder.time.setText(job.getAddedTime());
         holder.prefer.setText("Unprefer");
     }
 
@@ -46,28 +46,26 @@ public class PrefAdapter extends RecyclerView.Adapter<PrefAdapter.JobViewHolder>
         return jobList.size();
     }
 
-    public JobModel getItem(int position) {
+    public PreferEmployerModel getItem(int position) {
         return this.jobList.get(position);
     }
 
-    public void updateJobs(List<JobModel> jobs) {
+    public void updateJobs(List<PreferEmployerModel> jobs) {
         this.jobList = jobs;
         notifyDataSetChanged();
     }
 
     public class JobViewHolder extends RecyclerView.ViewHolder {
-        public TextView title;
+        public TextView employerEmail;
         public TextView company;
-        public TextView location;
-        public TextView salary;
+        public TextView time;
         public Button prefer;
 
         public JobViewHolder(@NonNull View itemView) {
             super(itemView);
-            title = itemView.findViewById(R.id.jobTitle);
+            employerEmail = itemView.findViewById(R.id.employerEmail);
             company = itemView.findViewById(R.id.companyName);
-            location = itemView.findViewById(R.id.jobLocation);
-            salary = itemView.findViewById(R.id.salaryText);
+            time = itemView.findViewById(R.id.time);
             prefer = itemView.findViewById(R.id.preferredListButton);
             prefer.setOnClickListener(view -> listener.onItemClick(view, getAdapterPosition()));
         }

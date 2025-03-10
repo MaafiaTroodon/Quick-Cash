@@ -9,7 +9,7 @@ public class UserModel {
     private String password;
     private String role;
     private SecurityModel securityAns;
-    private List<JobModel> preferredJob = new ArrayList<>();
+    private List<PreferEmployerModel> preferredJob = new ArrayList<>();
 
     public UserModel() {
     }
@@ -62,13 +62,13 @@ public class UserModel {
         this.securityAns = securityAns;
     }
 
-    public List<JobModel> getPreferredJob() { return preferredJob; }
+    public List<PreferEmployerModel> getPreferredJob() { return preferredJob; }
 
-    public void setPreferredJob(List<JobModel> jobModelList) {
+    public void setPreferredJob(List<PreferEmployerModel> jobModelList) {
         preferredJob = jobModelList;
     }
 
-    protected JobModel createdTempModel() {
-        return new JobModel();
+    protected PreferEmployerModel createdTempModel() {
+        return new PreferEmployerModel();
     }
 }

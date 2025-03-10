@@ -17,6 +17,7 @@ import com.example.quickcash.R;
 import com.example.quickcash.core.Users;
 import com.example.quickcash.database.Firebase;
 import com.example.quickcash.model.JobModel;
+import com.example.quickcash.model.PreferEmployerModel;
 import com.example.quickcash.util.PrefAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -36,7 +37,7 @@ public class SearcherPreferredListDashboard extends AppCompatActivity implements
     private RecyclerView recyclerView;
     private Button backButton;
     public PrefAdapter prefAdapter;
-    private List<JobModel> prefList;
+    private List<PreferEmployerModel> prefList;
     public String currentUserEmail;
 
 
@@ -72,7 +73,7 @@ public class SearcherPreferredListDashboard extends AppCompatActivity implements
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                 for (DataSnapshot jobSnapshot : snapshot.getChildren()) {
-                    JobModel job = jobSnapshot.getValue(JobModel.class);
+                    PreferEmployerModel job = jobSnapshot.getValue(PreferEmployerModel.class);
                     prefList.add(job);
                 }
                 prefAdapter.updateJobs(prefList);
@@ -95,15 +96,18 @@ public class SearcherPreferredListDashboard extends AppCompatActivity implements
     /*Remove selected job to Preferred list when unprefer button is clicked*/
     @Override
     public void onItemClick(View view, int position) {
-        JobModel selectedItem = prefAdapter.getItem(position);
+        PreferEmployerModel selectedItem = prefAdapter.getItem(position);
 //        Toast.makeText(this, selectedItem.getCompany(), Toast.LENGTH_SHORT).show();
         removeToPreferredList(selectedItem);
     }
 
-    protected void removeToPreferredList(JobModel selectedItem) {
+    protected void removeToPreferredList(PreferEmployerModel selectedItem) {
         if(prefList.contains(selectedItem)) {
-            Toast.makeText(this, selectedItem.getTitle() + " Is removed to preferred list", Toast.LENGTH_SHORT).show();
+            if(prefList.size() == 1) {
+                prefList.add(new PreferEmployerModel());
+            }
             prefList.remove(selectedItem);
+            Toast.makeText(this, selectedItem.getCompany() + " Is removed to preferred list", Toast.LENGTH_SHORT).show();
 
             users.setPreferredList(currentUserEmail, prefList, new Users.UserCallback() {
                 @Override

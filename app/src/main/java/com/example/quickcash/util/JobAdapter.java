@@ -37,7 +37,7 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobViewHolder> {
         holder.company.setText(job.getCompany());
         holder.location.setText(job.getLocation());
         holder.salary.setText("$" + job.getSalaryText());
-        holder.prefer.setText("Add to preferred list");
+        holder.prefer.setText("Prefer this employer");
     }
 
 

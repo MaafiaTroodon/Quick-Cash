@@ -17,6 +17,7 @@ import com.example.quickcash.R;
 import com.example.quickcash.core.Users;
 import com.example.quickcash.database.Firebase;
 import com.example.quickcash.model.JobModel;
+import com.example.quickcash.model.PreferEmployerModel;
 import com.example.quickcash.util.JobAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -26,8 +27,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 
+import java.time.LocalDate;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 
 public class SearcherDashboard extends AppCompatActivity implements JobAdapter.ButtonClickListener {
@@ -35,12 +39,12 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
     private FirebaseAuth auth;
     private RecyclerView recyclerView;
     public JobAdapter jobAdapter;
+    private DatabaseReference usersRef;
     private List<JobModel> jobList;
-    public List<JobModel> preferredJob;
-
+    public List<PreferEmployerModel> preferredJob;
+    private String currentUserEmail;
     private DatabaseReference jobsRef;
     private Users users;
-
     public DatabaseReference getJobsRef() {
         return jobsRef;
     }
@@ -56,6 +60,8 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
         setContentView(R.layout.activity_searcherdashboard);
 
         auth = FirebaseAuth.getInstance();
+
+        currentUserEmail = (String) getIntent().getSerializableExtra("currentUser");
 
         logoutButton = findViewById(R.id.LogOut);
         preferredJobButton = findViewById(R.id.PreferredList);
@@ -74,6 +80,25 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
         users = new Users(firebase);
 
         jobsRef = FirebaseDatabase.getInstance().getReference("Jobs");
+
+        usersRef = FirebaseDatabase.getInstance().getReference("Users");
+        String sanitizedEmail = currentUserEmail.replace(".", ",");
+        usersRef.child(sanitizedEmail).child("preferredJob").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                for (DataSnapshot jobSnapshot : snapshot.getChildren()) {
+                    PreferEmployerModel job = jobSnapshot.getValue(PreferEmployerModel.class);
+                    preferredJob.add(job);
+                }
+                Log.d("JobList", "Total jobs fetched: " + preferredJob.size());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("Firebase", "Failed to read jobs", error.toException());
+            }
+        });
 
         jobsRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -109,7 +134,10 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
         });
 
         preferredJobButton.setOnClickListener(v -> {
-            String currentUserEmail = (String) getIntent().getSerializableExtra("currentUser");
+            PreferEmployerModel isTempIn = new PreferEmployerModel();
+            if(preferredJob.size()>=2 && preferredJob.contains(isTempIn)) {
+                preferredJob.remove(isTempIn);
+            }
             Log.d("Current User Email!", currentUserEmail + "!");
             users.setPreferredList(currentUserEmail, preferredJob, new Users.UserCallback() {
                 @Override
@@ -131,14 +159,17 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
     @Override
     public void onItemClick(View view, int position) {
         JobModel selectedItem = jobAdapter.getItem(position);
+        LocalDate now = LocalDate.now();
+        String addedTime = now.getYear() + "-" + now.getMonthValue() + "-" + now.getDayOfMonth() + "-" + now.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
+        PreferEmployerModel preferEmployerModel = new PreferEmployerModel(selectedItem, addedTime);
 //        Toast.makeText(this, selectedItem.getCompany(), Toast.LENGTH_SHORT).show();
-        addToPreferredList(selectedItem);
+        addToPreferredList(preferEmployerModel);
     }
 
-    protected void addToPreferredList(JobModel selectedItem) {
-        if(!preferredJob.contains(selectedItem)) {
-            Toast.makeText(this, selectedItem.getTitle() + " Is added to preferred list", Toast.LENGTH_SHORT).show();
-            preferredJob.add(selectedItem);
+    protected void addToPreferredList(PreferEmployerModel preferEmployerModel) {
+        if(!preferredJob.contains(preferEmployerModel)) {
+            preferredJob.add(preferEmployerModel);
+            Toast.makeText(this, preferEmployerModel.getCompany() + " Is added to preferred list", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "This job is already in the list", Toast.LENGTH_SHORT).show();
         }
