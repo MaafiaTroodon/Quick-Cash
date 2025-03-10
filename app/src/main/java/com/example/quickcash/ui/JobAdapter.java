@@ -14,12 +14,11 @@ import com.example.quickcash.model.JobModel;
 import java.util.List;
 
 public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobViewHolder> {
-    public List<JobModel> jobList;
+    private List<JobModel> jobList;
 
     public JobAdapter(List<JobModel> jobList) {
         this.jobList = jobList;
     }
-
 
     @NonNull
     @Override
@@ -37,22 +36,18 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobViewHolder> {
         holder.salary.setText("$" + job.getSalaryText());
     }
 
-
     @Override
     public int getItemCount() {
         return jobList.size();
     }
 
-    public void updateJobs(List<JobModel> jobs) {
-        this.jobList = jobs;
+    public void updateJobs(List<JobModel> newJobs) {
+        this.jobList = newJobs;
         notifyDataSetChanged();
     }
 
     public static class JobViewHolder extends RecyclerView.ViewHolder {
-        public TextView title;
-        public TextView company;
-        public TextView location;
-        public TextView salary;
+        public TextView title, company, location, salary;
 
         public JobViewHolder(@NonNull View itemView) {
             super(itemView);
