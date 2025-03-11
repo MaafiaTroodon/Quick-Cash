@@ -1,0 +1,46 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/etJobTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Job Title"/>
+
+    <EditText
+        android:id="@+id/etMinSalary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Min Salary"
+        android:inputType="number"/>
+
+    <EditText
+        android:id="@+id/etMaxSalary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Max Salary"
+        android:inputType="number"/>
+
+    <EditText
+        android:id="@+id/etCompany"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Company"/>
+
+    <EditText
+        android:id="@+id/etLocation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Location"/>
+
+    <Button
+        android:id="@+id/btnApplyFilters"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Apply Filters"/>
+
+</LinearLayout>

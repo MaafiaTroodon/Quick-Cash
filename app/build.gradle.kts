@@ -14,6 +14,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        // Removed testInstrumentationRunner for unit tests
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -26,6 +27,7 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -33,7 +35,7 @@ android {
 }
 
 dependencies {
-
+    // App dependencies
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
@@ -41,7 +43,25 @@ dependencies {
     implementation(libs.firebase.database)
     implementation(libs.firebase.auth)
     implementation(libs.espresso.intents)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.ext.junit)
-    androidTestImplementation(libs.espresso.core)
+    implementation(libs.espresso.contrib)
+    implementation("com.google.android.material:material:1.9.0")
+    testImplementation ("org.mockito:mockito-core:4.0.0")
+    testImplementation ("org.mockito:mockito-inline:4.0.0")
+
+
+
+    // Unit testing dependencies
+    testImplementation("junit:junit:4.13.2") // For JUnit tests
+    testImplementation("org.mockito:mockito-core:3.9.0") // For Mockito
+
+    // AndroidTest dependencies (instrumentation tests)
+    androidTestImplementation("androidx.test.ext:junit:1.1.3") // For Android Instrumentation Tests
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0") // For Espresso UI testing
+
+    // Optional: Mocking for inline mocking support
+    testImplementation("org.mockito:mockito-inline:3.4.0")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1")
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.5.1")
 }
