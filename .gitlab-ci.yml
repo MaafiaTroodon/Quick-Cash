@@ -9,16 +9,17 @@ before_script:
   - apt-get --quiet update --yes && apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
   - export ANDROID_HOME="${PWD}/android-home"
   - export ANDROID_SDK_ROOT=$ANDROID_HOME
-  - install -d $ANDROID_HOME
+  - mkdir -p $ANDROID_HOME
   - wget --output-document=$ANDROID_HOME/cmdline-tools.zip "https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS}_latest.zip"
   - pushd $ANDROID_HOME
-  - unzip cmdline-tools.zip
-  - mv cmdline-tools cmdline-tools-temp
-  - mv cmdline-tools-temp/cmdline-tools cmdline-tools
+  - unzip -q cmdline-tools.zip
+  - mkdir -p cmdline-tools/latest
+  - mv cmdline-tools/* cmdline-tools/latest/
   - popd
-  - export PATH=$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH
+  - export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH
+  - ls -l $ANDROID_HOME/cmdline-tools/latest/bin
   - which sdkmanager
-  - sdkmanager --version
+  - sdkmanager --sdk_root=${ANDROID_HOME} --version || true
   - yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses || true
   - sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${ANDROID_COMPILE_SDK}"
   - sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools"
