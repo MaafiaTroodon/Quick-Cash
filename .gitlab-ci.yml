@@ -13,13 +13,15 @@ before_script:
   - wget --output-document=$ANDROID_HOME/cmdline-tools.zip "https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS}_latest.zip"
   - pushd $ANDROID_HOME
   - unzip -q cmdline-tools.zip
-  - mkdir -p cmdline-tools/latest
-  - mv cmdline-tools/* cmdline-tools/latest/
+  - rm -f cmdline-tools.zip  # Remove the zip file after extraction to avoid conflicts
+  - mv cmdline-tools cmdline-tools-temp  # Move extracted folder to a temp directory
+  - mkdir -p cmdline-tools/latest  # Create the correct structure
+  - mv cmdline-tools-temp/* cmdline-tools/latest/  # Move contents correctly
+  - rm -rf cmdline-tools-temp  # Clean up the temp folder
   - popd
   - export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH
-  - ls -l $ANDROID_HOME/cmdline-tools/latest/bin
   - which sdkmanager
-  - sdkmanager --sdk_root=${ANDROID_HOME} --version || true
+  - sdkmanager --version
   - yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses || true
   - sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${ANDROID_COMPILE_SDK}"
   - sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools"
