@@ -6,18 +6,17 @@ variables:
   ANDROID_SDK_TOOLS: "9477386"
 
 before_script:
-  - apt-get --quiet update --yes
-  - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
+  - apt-get --quiet update --yes && apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
   - export ANDROID_HOME="${PWD}/android-home"
   - export ANDROID_SDK_ROOT=$ANDROID_HOME
-  - export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH
+  - export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH"
   - install -d $ANDROID_HOME
-  - wget --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS}_latest.zip
+  - wget --output-document=$ANDROID_HOME/cmdline-tools.zip "https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS}_latest.zip"
   - pushd $ANDROID_HOME
   - unzip -d cmdline-tools cmdline-tools.zip
   - mv cmdline-tools/cmdline-tools/* cmdline-tools/
   - popd
-  - export PATH=$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH
+  - export PATH="$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH"
   - echo "SDK Path: $ANDROID_HOME"
   - ls -l $ANDROID_HOME/cmdline-tools/latest/bin
   - which sdkmanager
@@ -29,13 +28,11 @@ before_script:
   - chmod +x ./gradlew
 
 lintDebug:
-  interruptible: true
   stage: build
   script:
     - ./gradlew -Pci --console=plain :app:lintDebug -PbuildDir=lint
 
 assembleDebug:
-  interruptible: true
   stage: build
   script:
     - ./gradlew assembleDebug
@@ -44,7 +41,6 @@ assembleDebug:
       - app/build/outputs/
 
 debugTests:
-  interruptible: true
   stage: test
   script:
     - ./gradlew -Pci --console=plain :app:testDebug
@@ -58,3 +54,4 @@ unit_tests:
     expire_in: 30 days
     paths:
       - app/build/reports/tests/
+
