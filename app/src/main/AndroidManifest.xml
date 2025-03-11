@@ -45,6 +45,9 @@
         <activity android:name=".ui.CreateJobPage"
             android:exported="true"/>
 
+        <activity android:name=".ui.FilterPage"
+            android:exported="true"/>
+
     </application>
 
 </manifest>
