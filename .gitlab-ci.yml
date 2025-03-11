@@ -17,7 +17,6 @@ before_script:
   - mv cmdline-tools-temp/cmdline-tools cmdline-tools
   - popd
   - export PATH=$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH
-  - echo "SDK Path: $ANDROID_HOME"
   - which sdkmanager
   - sdkmanager --version
   - yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses || true
