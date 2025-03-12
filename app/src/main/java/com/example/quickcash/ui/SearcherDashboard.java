@@ -18,9 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quickcash.R;
 import com.example.quickcash.model.JobModel;
-import com.example.quickcash.ui.FilterPage;
-import com.example.quickcash.ui.JobAdapter;
-import com.example.quickcash.ui.LoginActivity;
+import com.example.quickcash.util.JobAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;

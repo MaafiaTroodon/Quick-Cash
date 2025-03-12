@@ -1,4 +1,4 @@
-package com.example.quickcash.ui;
+package com.example.quickcash.util;
 
 import android.view.LayoutInflater;
 import android.view.View;
