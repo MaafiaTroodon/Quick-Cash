@@ -7,7 +7,7 @@ public class JobModel {
     private String type;
     private String salaryText;
     private String company;
-    private String EmployerEmail;
+    private String employerEmail;
 
     // 🔹 No-argument constructor (Required by Firebase)
     public JobModel() {
@@ -20,7 +20,7 @@ public class JobModel {
         this.type = type;
         this.salaryText = salaryText;
         this.company = company;
-        this.EmployerEmail = employerEmail;
+        this.employerEmail = employerEmail;
     }
 
     public JobModel(String title, String location, String salaryText,String company) {
@@ -56,6 +56,6 @@ public class JobModel {
     }
 
     public String getEmployerEmail() {
-        return EmployerEmail;
+        return employerEmail;
     }
 }

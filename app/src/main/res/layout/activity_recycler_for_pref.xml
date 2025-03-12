@@ -17,7 +17,7 @@
         android:padding="10dp">
 
         <TextView
-            android:id="@+id/jobTitle"
+            android:id="@+id/employerEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp"
@@ -30,22 +30,16 @@
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/jobLocation"
+            android:id="@+id/time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="14sp" />
+            android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/salaryText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@android:color/holo_green_dark"
-            android:textSize="14sp" />
         <Button
             android:id="@+id/preferredListButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Add to preferred list" />
+            android:text="Unprefer" />
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>
