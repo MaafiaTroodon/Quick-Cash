@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -46,6 +47,8 @@ public class SearcherDashboard extends AppCompatActivity {
     private TextView tvFilteredResults; // New TextView for showing applied filters
 
     private Button logoutButton;
+
+    private Button clearSearchButton;
     private FirebaseAuth auth;
 
     @SuppressLint("MissingInflatedId")
@@ -56,9 +59,9 @@ public class SearcherDashboard extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
         searchInput = findViewById(R.id.searchInput);
         searchButton = findViewById(R.id.searchButton);
+        clearSearchButton = findViewById(R.id.clearSearchButton);
         filterButton = findViewById(R.id.filterButton);
         tvFilteredResults = findViewById(R.id.tvFilteredResults);
 
@@ -77,12 +80,17 @@ public class SearcherDashboard extends AppCompatActivity {
 
         searchButton.setOnClickListener(v -> {
             String query = searchInput.getText().toString().trim();
-            if (query.isEmpty()) {
-                restoreFullList(); // Restore original job list when search is empty
-            } else {
+            if (!query.isEmpty()) {
                 filterJobs(query);
+                clearSearchButton.setVisibility(View.VISIBLE);
             }
         });
+
+        clearSearchButton.setOnClickListener(v -> {
+            restoreFullList();
+            clearSearchButton.setVisibility(View.GONE); // Hide "Clear Search"
+        });
+
 
         filterButton.setOnClickListener(v -> {
             Intent intent = new Intent(SearcherDashboard.this, FilterPage.class);
