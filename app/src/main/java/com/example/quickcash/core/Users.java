@@ -3,6 +3,7 @@ package com.example.quickcash.core;
 import androidx.annotation.NonNull;
 
 import com.example.quickcash.database.Firebase;
+import com.example.quickcash.model.PreferEmployerModel;
 import com.example.quickcash.model.SecurityModel;
 import com.example.quickcash.model.UserModel;
 import com.google.firebase.auth.FirebaseAuth;
@@ -12,6 +13,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Users {
@@ -142,6 +144,42 @@ public class Users {
                     }
                 });
     }
+
+    public void setPreferredList(String email, List<PreferEmployerModel> newPreferredJobs, UserCallback callback) {
+        // Sanitize email to match Firebase database structure
+        String sanitizedEmail = email.replace(".", ",");
+        usersRef.child(sanitizedEmail).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists()) {
+                    callback.onError("Email not found.");
+                    return;
+                }
+
+                if(newPreferredJobs.isEmpty()) {
+                    callback.onSuccess("Did not added new job");
+                } else {
+                    usersRef.child(sanitizedEmail).child("preferredJob").setValue(newPreferredJobs)
+                            .addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    System.out.println("preferred job successfully updated in Firebase.");
+                                    callback.onSuccess("preferred job updated successfully.");
+                                } else {
+                                    System.out.println("Failed to update preferred job: " + task.getException());
+                                    callback.onError("Failed to preferred job: " + task.getException());
+                                }
+                            });
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                callback.onError("Database error: " + error.getMessage());
+            }
+        });
+    }
+
 
 
 
