@@ -1,17 +1,12 @@
 package com.example.quickcash.model;
 
-public class JobModel {
-    private String title;
-    private String description;
-    private String location;
-    private String type;
-    private String salaryText;
-    private String company;
-    private String employerEmail;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-    // 🔹 No-argument constructor (Required by Firebase)
-    public JobModel() {
-    }
+public class JobModel implements Parcelable {
+    private String title, description, location, type, salaryText, company, employerEmail;
+
+    public JobModel() { }
 
     public JobModel(String title, String description, String location, String type, String salaryText, String company, String employerEmail) {
         this.title = title;
@@ -23,39 +18,50 @@ public class JobModel {
         this.employerEmail = employerEmail;
     }
 
-    public JobModel(String title, String location, String salaryText,String company) {
-        this.title = title;
-        this.location = location;
-        this.salaryText = salaryText;
-        this.company = company;
+    protected JobModel(Parcel in) {
+        title = in.readString();
+        description = in.readString();
+        location = in.readString();
+        type = in.readString();
+        salaryText = in.readString();
+        company = in.readString();
+        employerEmail = in.readString();
     }
 
-    // 🔹 Getters for Firebase serialization
-    public String getTitle() {
-        return title;
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(title);
+        dest.writeString(description);
+        dest.writeString(location);
+        dest.writeString(type);
+        dest.writeString(salaryText);
+        dest.writeString(company);
+        dest.writeString(employerEmail);
     }
 
-    public String getDescription() {
-        return description;
+    public static final Creator<JobModel> CREATOR = new Creator<JobModel>() {
+        @Override
+        public JobModel createFromParcel(Parcel in) {
+            return new JobModel(in);
+        }
+
+        @Override
+        public JobModel[] newArray(int size) {
+            return new JobModel[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
-    public String getLocation() {
-        return location;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public String getSalaryText() {
-        return salaryText;
-    }
-
-    public String getCompany() {
-        return company;
-    }
-
-    public String getEmployerEmail() {
-        return employerEmail;
-    }
+    // Getters
+    public String getTitle() { return title; }
+    public String getDescription() { return description; }
+    public String getLocation() { return location; }
+    public String getType() { return type; }
+    public String getSalaryText() { return salaryText; }
+    public String getCompany() { return company; }
+    public String getEmployerEmail() { return employerEmail; }
 }

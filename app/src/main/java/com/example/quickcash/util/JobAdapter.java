@@ -1,5 +1,7 @@
 package com.example.quickcash.util;
 
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quickcash.R;
 import com.example.quickcash.model.JobModel;
+import com.example.quickcash.ui.JobDetailsActivity;
 
 import java.util.List;
 
@@ -37,7 +40,12 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobViewHolder> {
         holder.company.setText(job.getCompany());
         holder.location.setText(job.getLocation());
         holder.salary.setText("$" + job.getSalaryText());
-        holder.prefer.setText("Prefer this employer");
+
+        holder.itemView.setOnClickListener(view -> {
+            Intent intent = new Intent(view.getContext(), JobDetailsActivity.class);
+            intent.putExtra("job", job);
+            view.getContext().startActivity(intent);
+        });
     }
 
 
