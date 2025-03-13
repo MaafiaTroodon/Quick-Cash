@@ -90,7 +90,7 @@ public class CreateJobPage extends AppCompatActivity {
             return;
         }
 
-        // ✅ Create Job and Navigate on Success
+        // Create Job and Navigate on Success
         JobModel jobModel = new JobModel(title, description, location, type, salaryText, company, userEmail);
 
         jobs.createJob(jobModel, new Jobs.JobCallback() {
