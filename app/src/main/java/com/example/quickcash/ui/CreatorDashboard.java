@@ -15,7 +15,7 @@ import com.google.firebase.auth.FirebaseAuth;
 public class CreatorDashboard extends AppCompatActivity {
 
     private TextView welcomeText;
-    private Button logoutButton, jobCreationButton;
+    private Button logoutButton, jobCreationButton, viewSearchersButton;
     private FirebaseAuth auth;
 
     @Override
@@ -26,12 +26,18 @@ public class CreatorDashboard extends AppCompatActivity {
         welcomeText = findViewById(R.id.heading);
         logoutButton = findViewById(R.id.LogOut);
         jobCreationButton = findViewById(R.id.jobCreationButton);
+        viewSearchersButton = findViewById(R.id.viewSearchersButton);
 
         auth = FirebaseAuth.getInstance();
 
         // ✅ Open CreateJobPage when button is clicked
         jobCreationButton.setOnClickListener(v -> {
             Intent intent = new Intent(CreatorDashboard.this, CreateJobPage.class);
+            startActivity(intent);
+        });
+
+        viewSearchersButton.setOnClickListener(v -> {
+            Intent intent = new Intent(CreatorDashboard.this, CreatorEmployeeList.class);
             startActivity(intent);
         });
 

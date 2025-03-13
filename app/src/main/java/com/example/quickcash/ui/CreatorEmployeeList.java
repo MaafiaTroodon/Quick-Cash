@@ -44,6 +44,14 @@ public class CreatorEmployeeList extends AppCompatActivity implements EmployeeAd
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_creator_employee_list);
 
+        auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser() == null) {
+            // User is not logged in, redirect to login screen
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return;
+        }
+
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(false);
@@ -66,10 +74,13 @@ public class CreatorEmployeeList extends AppCompatActivity implements EmployeeAd
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 employeeList.clear();
+                Log.d("FirebaseData", "Snapshot: " + snapshot.toString()); // Log the entire snapshot
                 for (DataSnapshot userSnapshot : snapshot.getChildren()) {
                     UserModel user = userSnapshot.getValue(UserModel.class);
-                    if (user != null && "searcher".equals(user.getRole())) {
+                    Log.d("FirebaseData", "User: " + user); // Log each user
+                    if (user != null && "Searcher".equals(user.getRole())) {
                         employeeList.add(user);
+                        Log.d("FirebaseData", "Added Searcher: " + user.getUsername()); // Log added searchers
                     }
                 }
                 employeeAdapter.updateEmployees(employeeList);
