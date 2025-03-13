@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -11,43 +12,40 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QuickCash"
         tools:targetApi="31">
-
+        <activity
+            android:name=".ui.SearcherPreferredListDashboard"
+            android:exported="false" />
         <!-- Main Activity (Launcher) -->
         <activity
             android:name=".ui.FrontPage"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- Create Account Activity (Added this) -->
-        <activity android:name=".ui.CreateAccount"
+        </activity> <!-- Create Account Activity (Added this) -->
+        <activity
+            android:name=".ui.CreateAccount"
+            android:exported="true" /> <!-- Reset Password Activity -->
+        <activity
+            android:name=".ui.ResetPasswordActivity"
+            android:exported="true" /> <!-- Dashboard Activity -->
+        <activity
+            android:name=".ui.CreatorDashboard"
+            android:exported="true" /> <!-- Searcher Dashboard Activity -->
+        <activity
+            android:name=".ui.SearcherDashboard"
+            android:exported="true" /> <!-- Login Activity Activity -->
+        <activity
+            android:name=".ui.LoginActivity"
             android:exported="true" />
-
-        <!-- Reset Password Activity -->
-        <activity android:name=".ui.ResetPasswordActivity"
+        <activity
+            android:name=".ui.CreateJobPage"
             android:exported="true" />
-
-        <!-- Dashboard Activity -->
-        <activity android:name=".ui.CreatorDashboard"
-            android:exported="true"/>
-
-        <!-- Searcher Dashboard Activity -->
-        <activity android:name=".ui.SearcherDashboard"
-            android:exported="true"/>
-
-        <!-- Login Activity Activity -->
-        <activity android:name=".ui.LoginActivity"
-            android:exported="true"/>
-
-        <activity android:name=".ui.CreateJobPage"
-            android:exported="true"/>
-
-        <activity android:name=".ui.FilterPage"
-            android:exported="true"/>
-
+        <activity
+            android:name=".ui.FilterPage"
+            android:exported="true" />
     </application>
 
 </manifest>
