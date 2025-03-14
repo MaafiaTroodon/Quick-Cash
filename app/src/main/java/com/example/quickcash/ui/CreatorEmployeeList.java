@@ -34,6 +34,7 @@ public class CreatorEmployeeList extends AppCompatActivity implements EmployeeAd
     private Users users;
     private DatabaseReference usersRef;
     private RecyclerView recyclerView;
+    
     private Button backButton;
     public EmployeeAdapter employeeAdapter;
     private List<UserModel> employeeList;
@@ -67,6 +68,7 @@ public class CreatorEmployeeList extends AppCompatActivity implements EmployeeAd
         users = new Users(firebase);
 
         currentUserEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        String sanitizedEmail = currentUserEmail.replace(".", ",");
 
         usersRef = FirebaseDatabase.getInstance().getReference("Users");
 
@@ -75,12 +77,23 @@ public class CreatorEmployeeList extends AppCompatActivity implements EmployeeAd
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 employeeList.clear();
                 Log.d("FirebaseData", "Snapshot: " + snapshot.toString()); // Log the entire snapshot
+
                 for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                    UserModel user = userSnapshot.getValue(UserModel.class);
-                    Log.d("FirebaseData", "User: " + user); // Log each user
-                    if (user != null && "Searcher".equals(user.getRole())) {
-                        employeeList.add(user);
-                        Log.d("FirebaseData", "Added Searcher: " + user.getUsername()); // Log added searchers
+                    // Convert key back to a proper email format
+                    String keyEmail = userSnapshot.getKey();
+                    if (keyEmail != null) {
+                        String userEmail = keyEmail.replace(",", ".");
+                        UserModel user = userSnapshot.getValue(UserModel.class);
+
+                        if (user != null) {
+                            user.setEmail(userEmail); // Set correct email
+                            Log.d("FirebaseData", "User: " + user); // Log each user
+
+                            if ("Searcher".equals(user.getRole())) {
+                                employeeList.add(user);
+                                Log.d("FirebaseData", "Added Searcher: " + user.getUsername()); // Log added searchers
+                            }
+                        }
                     }
                 }
                 employeeAdapter.updateEmployees(employeeList);
@@ -115,6 +128,7 @@ public class CreatorEmployeeList extends AppCompatActivity implements EmployeeAd
                     for (DataSnapshot employeeSnapshot : snapshot.getChildren()) {
                         PreferEmployeeModel employee = employeeSnapshot.getValue(PreferEmployeeModel.class);
                         preferredEmployees.add(employee);
+                        Log.d("PreferredEmployees", "Existing Preferred Employee: " + employee.getEmployeeName());
                     }
                 }
 
@@ -129,12 +143,15 @@ public class CreatorEmployeeList extends AppCompatActivity implements EmployeeAd
                     usersRef.child(sanitizedEmail).child("preferredEmployees").setValue(preferredEmployees)
                             .addOnCompleteListener(task -> {
                                 if (task.isSuccessful()) {
+                                    Log.d("PreferredEmployees", "Added to preferred employees: " + newPreferredEmployee.getEmployeeName());
                                     Toast.makeText(CreatorEmployeeList.this, "Added to preferred employees", Toast.LENGTH_SHORT).show();
                                 } else {
+                                    Log.e("PreferredEmployees", "Failed to add to preferred employees");
                                     Toast.makeText(CreatorEmployeeList.this, "Failed to add to preferred employees", Toast.LENGTH_LONG).show();
                                 }
                             });
                 } else {
+                    Log.d("PreferredEmployees", "Employee already in preferred list: " + newPreferredEmployee.getEmployeeName());
                     Toast.makeText(CreatorEmployeeList.this, "Employee already in preferred list", Toast.LENGTH_SHORT).show();
                 }
             }

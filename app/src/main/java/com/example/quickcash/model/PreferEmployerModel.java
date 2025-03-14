@@ -3,10 +3,8 @@ package com.example.quickcash.model;
 public class PreferEmployerModel {
     private String employerEmail, company, addedTime;
 
+
     public PreferEmployerModel() {
-        this.employerEmail = "You don't";
-        this.company = "have a";
-        this.addedTime = "preferred Employer";
     }
 
     public PreferEmployerModel(JobModel jobModel, String time) {

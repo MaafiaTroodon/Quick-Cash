@@ -6,7 +6,6 @@ public class PreferEmployeeModel {
     private String addedTime;
 
     public PreferEmployeeModel() {
-        // Default constructor required for Firebase
     }
 
     public PreferEmployeeModel(String employeeEmail, String employeeName, String addedTime) {
