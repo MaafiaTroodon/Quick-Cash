@@ -1,3 +1,5 @@
+package com.example.quickcash.ui;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,11 +12,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.quickcash.R;
 import com.example.quickcash.core.Users;
-import com.example.quickcash.model.PreferEmployeeModel;
+import com.example.quickcash.database.Firebase;
 import com.example.quickcash.model.UserModel;
-import com.example.quickcash.ui.CreatorDashboard;
-import com.example.quickcash.ui.LoginActivity;
+import com.example.quickcash.model.PreferEmployeeModel;
+import com.example.quickcash.util.EmployeeAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;

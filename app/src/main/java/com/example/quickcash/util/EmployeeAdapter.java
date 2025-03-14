@@ -1,3 +1,5 @@
+package com.example.quickcash.util;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
