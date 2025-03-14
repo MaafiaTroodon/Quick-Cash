@@ -1,5 +1,3 @@
-package com.example.quickcash.ui;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,12 +10,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.quickcash.R;
 import com.example.quickcash.core.Users;
-import com.example.quickcash.database.Firebase;
-import com.example.quickcash.model.UserModel;
 import com.example.quickcash.model.PreferEmployeeModel;
-import com.example.quickcash.util.EmployeeAdapter;
+import com.example.quickcash.model.UserModel;
+import com.example.quickcash.ui.CreatorDashboard;
+import com.example.quickcash.ui.LoginActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -34,7 +31,6 @@ public class CreatorEmployeeList extends AppCompatActivity implements EmployeeAd
     private Users users;
     private DatabaseReference usersRef;
     private RecyclerView recyclerView;
-    
     private Button backButton;
     public EmployeeAdapter employeeAdapter;
     private List<UserModel> employeeList;
@@ -79,7 +75,6 @@ public class CreatorEmployeeList extends AppCompatActivity implements EmployeeAd
                 Log.d("FirebaseData", "Snapshot: " + snapshot.toString()); // Log the entire snapshot
 
                 for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                    // Convert key back to a proper email format
                     String keyEmail = userSnapshot.getKey();
                     if (keyEmail != null) {
                         String userEmail = keyEmail.replace(",", ".");
@@ -87,7 +82,7 @@ public class CreatorEmployeeList extends AppCompatActivity implements EmployeeAd
 
                         if (user != null) {
                             user.setEmail(userEmail); // Set correct email
-                            Log.d("FirebaseData", "User: " + user); // Log each user
+                            Log.d("FirebaseData", "User: " + user.getUsername() + ", Role: " + user.getRole()); // Log each user
 
                             if ("Searcher".equals(user.getRole())) {
                                 employeeList.add(user);

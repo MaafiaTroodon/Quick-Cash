@@ -1,5 +1,3 @@
-package com.example.quickcash.util;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.quickcash.R;
 import com.example.quickcash.model.UserModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeeAdapter extends RecyclerView.Adapter<EmployeeAdapter.EmployeeViewHolder> {
@@ -21,7 +20,7 @@ public class EmployeeAdapter extends RecyclerView.Adapter<EmployeeAdapter.Employ
     private ButtonClickListener itemClickListener;
 
     public EmployeeAdapter(List<UserModel> employeeList) {
-        this.employeeList = employeeList;
+        this.employeeList = new ArrayList<>(employeeList); // Initialize with a copy of the list
     }
 
     public void setItemClickListener(ButtonClickListener itemClickListener) {
@@ -61,6 +60,7 @@ public class EmployeeAdapter extends RecyclerView.Adapter<EmployeeAdapter.Employ
     public void updateEmployees(List<UserModel> newEmployeeList) {
         employeeList.clear();
         employeeList.addAll(newEmployeeList);
+        Log.d("EmployeeAdapter", "Updating employees: " + employeeList.size());
         notifyDataSetChanged(); // Notify the adapter of data changes
     }
 
