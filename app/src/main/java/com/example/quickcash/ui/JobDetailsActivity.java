@@ -33,7 +33,7 @@ public class JobDetailsActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();  // ✅ This will close JobDetailsActivity and return to the previous screen
+                finish();  //  This will close JobDetailsActivity and return to the previous screen
             }
         });
 
