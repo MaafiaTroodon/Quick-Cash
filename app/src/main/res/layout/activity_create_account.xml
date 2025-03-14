@@ -1,0 +1,189 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.CreateAccount">
+
+    <TextView
+        android:id="@+id/createAccountHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Create Account"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/userName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Enter your username"
+        app:layout_constraintTop_toBottomOf="@id/createAccountHeader"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:padding="12dp"/>
+
+    <EditText
+        android:id="@+id/email"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Enter your email"
+        app:layout_constraintTop_toBottomOf="@id/userName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="12dp"
+        android:padding="12dp"/>
+
+    <EditText
+        android:id="@+id/password"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Enter your password"
+        android:inputType="textPassword"
+        app:layout_constraintTop_toBottomOf="@id/email"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="12dp"
+        android:padding="12dp"/>
+
+    <EditText
+        android:id="@+id/confirmPassword"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Confirm password"
+        android:inputType="textPassword"
+        app:layout_constraintTop_toBottomOf="@id/password"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="12dp"
+        android:padding="12dp"/>
+
+    <!-- Role Selection -->
+    <TextView
+        android:id="@+id/roleSelectionLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select Your Role"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/confirmPassword"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp"
+        android:paddingStart="16dp"/>
+
+    <RadioGroup
+        android:id="@+id/roleGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/roleSelectionLabel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp">
+
+        <RadioButton
+            android:id="@+id/radioCreator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Creator"/>
+
+        <RadioButton
+            android:id="@+id/radioSearcher"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Searcher"/>
+    </RadioGroup>
+
+    <!-- Security Questions -->
+    <TextView
+        android:id="@+id/securityQuestion1Label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="What is your pet's name?"
+        app:layout_constraintTop_toBottomOf="@id/roleGroup"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp"
+        android:paddingStart="16dp"/>
+
+    <EditText
+        android:id="@+id/securityAnswer1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Enter answer"
+        app:layout_constraintTop_toBottomOf="@id/securityQuestion1Label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="4dp"
+        android:padding="12dp"/>
+
+    <TextView
+        android:id="@+id/securityQuestion2Label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="What was the name of your first school?"
+        app:layout_constraintTop_toBottomOf="@id/securityAnswer1"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp"
+        android:paddingStart="16dp"/>
+
+    <EditText
+        android:id="@+id/securityAnswer2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Enter answer"
+        app:layout_constraintTop_toBottomOf="@id/securityQuestion2Label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="4dp"
+        android:padding="12dp"/>
+
+    <TextView
+        android:id="@+id/securityQuestion3Label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="What is your favorite movie?"
+        app:layout_constraintTop_toBottomOf="@id/securityAnswer2"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp"
+        android:paddingStart="16dp"/>
+
+    <EditText
+        android:id="@+id/securityAnswer3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Enter answer"
+        app:layout_constraintTop_toBottomOf="@id/securityQuestion3Label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="4dp"
+        android:padding="12dp"/>
+
+    <Button
+        android:id="@+id/buttonCreateAccount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create Account"
+        app:layout_constraintTop_toBottomOf="@id/securityAnswer3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp"
+        android:padding="12dp"/>
+
+    <TextView
+        android:id="@+id/textLoginLink"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Already have an account? Login here"
+        android:textColor="@android:color/holo_blue_dark"
+        app:layout_constraintTop_toBottomOf="@id/buttonCreateAccount"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="12dp"
+        android:padding="8dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
