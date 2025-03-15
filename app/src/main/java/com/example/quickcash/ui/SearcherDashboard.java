@@ -2,6 +2,8 @@ package com.example.quickcash.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -29,13 +31,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class SearcherDashboard extends AppCompatActivity implements JobAdapter.ButtonClickListener{
+public class SearcherDashboard extends AppCompatActivity implements JobAdapter.ButtonClickListener {
     public static final int FILTER_REQUEST_CODE = 1;
 
     private RecyclerView recyclerView;
@@ -50,6 +53,7 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
     private Button searchButton;
     private Button filterButton;
     private TextView tvFilteredResults; // New TextView for showing applied filters
+    private TextView locationText; // Added from US1-Location
     private Users users;
     private Button logoutButton, preferredJobButton;
     private FirebaseAuth auth;
@@ -67,6 +71,7 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
         searchButton = findViewById(R.id.searchButton);
         filterButton = findViewById(R.id.filterButton);
         tvFilteredResults = findViewById(R.id.tvFilteredResults);
+        locationText = findViewById(R.id.locationText); // Added from US1-Location
 
         jobList = new ArrayList<>();
         preferredJob = new ArrayList<>();
@@ -93,7 +98,6 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
         usersRef.child(sanitizedEmail).child("preferredJob").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-
                 for (DataSnapshot jobSnapshot : snapshot.getChildren()) {
                     PreferEmployerModel job = jobSnapshot.getValue(PreferEmployerModel.class);
                     preferredJob.add(job);
@@ -106,6 +110,16 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
                 Log.e("Firebase", "Failed to read jobs", error.toException());
             }
         });
+
+        // Retrieve location data from Intent
+        double latitude = getIntent().getDoubleExtra("latitude", 0.0);
+        double longitude = getIntent().getDoubleExtra("longitude", 0.0);
+
+        // Convert coordinates to address
+        String address = getAddressFromCoordinates(latitude, longitude);
+
+        // Display address
+        locationText.setText("Your Location: " + address);
 
         searchButton.setOnClickListener(v -> {
             String query = searchInput.getText().toString().trim();
@@ -130,7 +144,7 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
 
         preferredJobButton.setOnClickListener(v -> {
             PreferEmployerModel isTempIn = new PreferEmployerModel();
-            if(preferredJob.size()>=2 && preferredJob.contains(isTempIn)) {
+            if (preferredJob.size() >= 2 && preferredJob.contains(isTempIn)) {
                 preferredJob.remove(isTempIn);
             }
             Log.d("Current User Email!", currentUserEmail + "!");
@@ -138,7 +152,7 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
                 @Override
                 public void onSuccess(String message) {
                     Intent intent = new Intent(SearcherDashboard.this, SearcherPreferredListDashboard.class);
-                    intent.putExtra("currentUserEmail",  currentUserEmail);
+                    intent.putExtra("currentUserEmail", currentUserEmail);
                     startActivity(intent);
                 }
 
@@ -148,7 +162,20 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
                 }
             });
         });
+    }
 
+    private String getAddressFromCoordinates(double latitude, double longitude) {
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            if (addresses != null && !addresses.isEmpty()) {
+                Address address = addresses.get(0);
+                return address.getAddressLine(0);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "Unable to fetch address";
     }
     public List<JobModel> getFilteredJobs() {
         return jobList;
