@@ -30,7 +30,7 @@ import java.util.Locale;
 public class CreatorDashboard extends AppCompatActivity {
 
     private TextView welcomeText, locationText;
-    private Button logoutButton, jobCreationButton;
+    private Button logoutButton, jobCreationButton, viewSearchersButton;
     private FirebaseAuth auth;
 
     private LocationManager locationManager;
@@ -46,6 +46,7 @@ public class CreatorDashboard extends AppCompatActivity {
         welcomeText = findViewById(R.id.heading);
         logoutButton = findViewById(R.id.LogOut);
         jobCreationButton = findViewById(R.id.jobCreationButton);
+        viewSearchersButton = findViewById(R.id.viewSearchersButton);
         locationText = findViewById(R.id.locationText); // Added from US1-Location
 
         auth = FirebaseAuth.getInstance();
@@ -56,6 +57,11 @@ public class CreatorDashboard extends AppCompatActivity {
         // ✅ Open CreateJobPage when button is clicked
         jobCreationButton.setOnClickListener(v -> {
             Intent intent = new Intent(CreatorDashboard.this, CreateJobPage.class);
+            startActivity(intent);
+        });
+
+        viewSearchersButton.setOnClickListener(v -> {
+            Intent intent = new Intent(CreatorDashboard.this, CreatorEmployeeList.class);
             startActivity(intent);
         });
 

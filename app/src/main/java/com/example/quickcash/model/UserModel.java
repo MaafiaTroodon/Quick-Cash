@@ -10,6 +10,7 @@ public class UserModel {
     private String role;
     private SecurityModel securityAns;
     private List<PreferEmployerModel> preferredJob = new ArrayList<>();
+    private List<PreferEmployeeModel> preferredEmployees = new ArrayList<>();
 
     public UserModel() {
     }
@@ -68,5 +69,13 @@ public class UserModel {
     }
     protected PreferEmployerModel createdTempModel() {
         return new PreferEmployerModel();
+    }
+
+    public List<PreferEmployeeModel> getPreferredEmployees() {
+        return preferredEmployees;
+    }
+
+    public void setPreferredEmployees(List<PreferEmployeeModel> preferredEmployees) {
+        this.preferredEmployees = preferredEmployees;
     }
 }
