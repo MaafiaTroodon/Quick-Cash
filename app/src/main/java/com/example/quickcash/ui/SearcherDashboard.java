@@ -78,7 +78,6 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
         fullJobList = new ArrayList<>();
         jobAdapter = new JobAdapter(jobList);
         recyclerView.setAdapter(jobAdapter);
-        jobAdapter.setItemClickListener(this);
 
         jobsRef = FirebaseDatabase.getInstance().getReference("Jobs");
 
@@ -305,8 +304,19 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
         LocalDate now = LocalDate.now();
         String addedTime = now.getYear() + "-" + now.getMonthValue() + "-" + now.getDayOfMonth() + "-" + now.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
         PreferEmployerModel preferEmployerModel = new PreferEmployerModel(selectedItem, addedTime);
-//        Toast.makeText(this, selectedItem.getCompany(), Toast.LENGTH_SHORT).show();
+    //    Toast.makeText(this, selectedItem.getCompany(), Toast.LENGTH_SHORT).show();
         addToPreferredList(preferEmployerModel);
+    }
+
+    @Override
+    public void onDescriptionClick(View view, int position) {
+        JobModel selectedItem = jobAdapter.getItem(position);
+        LocalDate now = LocalDate.now();
+        String addedTime = now.getYear() + "-" + now.getMonthValue() + "-" + now.getDayOfMonth() + "-" + now.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
+        PreferEmployerModel preferEmployerModel = new PreferEmployerModel(selectedItem, addedTime);
+    //    Toast.makeText(this, selectedItem.getCompany(), Toast.LENGTH_SHORT).show();
+        addToPreferredList(preferEmployerModel);
+
     }
 
     protected void addToPreferredList(PreferEmployerModel preferEmployerModel) {
