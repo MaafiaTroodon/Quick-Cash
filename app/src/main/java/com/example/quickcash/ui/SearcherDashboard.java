@@ -1,6 +1,6 @@
+// SearcherDashboardActivity.java
 package com.example.quickcash.ui;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
@@ -10,14 +10,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.quickcash.R;
 import com.example.quickcash.core.Users;
 import com.example.quickcash.database.Firebase;
@@ -58,28 +54,34 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
     private Button logoutButton, preferredJobButton;
     private FirebaseAuth auth;
 
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_searcherdashboard);
 
+        // Initialize UI
         recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         searchInput = findViewById(R.id.searchInput);
         searchButton = findViewById(R.id.searchButton);
         clearSearchButton = findViewById(R.id.clearSearchButton);
         filterButton = findViewById(R.id.filterButton);
         tvFilteredResults = findViewById(R.id.tvFilteredResults);
-        locationText = findViewById(R.id.locationText); // Added from US1-Location
+        logoutButton = findViewById(R.id.LogOut);
 
+        // Initialize managers
+        jobFilterManager = new JobFilterManager();
+        jobDataManager = new JobDataManager();
+
+        // Setup RecyclerView
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         jobList = new ArrayList<>();
         preferredJob = new ArrayList<>();
         fullJobList = new ArrayList<>();
         jobAdapter = new JobAdapter(jobList);
         recyclerView.setAdapter(jobAdapter);
 
-        jobsRef = FirebaseDatabase.getInstance().getReference("Jobs");
+        // Load jobs
+        loadAllJobs();
 
         loadAllJobs(); // Load all jobs initially
 
@@ -122,17 +124,12 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
 
         searchButton.setOnClickListener(v -> {
             String query = searchInput.getText().toString().trim();
-            if (!query.isEmpty()) {
+            if (query.isEmpty()) {
+                restoreFullList(); // Restore original job list when search is empty
+            } else {
                 filterJobs(query);
-                clearSearchButton.setVisibility(View.VISIBLE);
             }
         });
-
-        clearSearchButton.setOnClickListener(v -> {
-            restoreFullList();
-            clearSearchButton.setVisibility(View.GONE); // Hide "Clear Search"
-        });
-
 
         filterButton.setOnClickListener(v -> {
             Intent intent = new Intent(SearcherDashboard.this, FilterPage.class);
@@ -186,47 +183,50 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
     }
 
     private void loadAllJobs() {
-        jobsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        jobDataManager.loadAllJobs(new JobDataManager.JobDataCallback() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+            public void onJobsLoaded(List<JobModel> jobs) {
                 jobList.clear();
-                fullJobList.clear(); // Clear previous data
-
-                for (DataSnapshot jobSnapshot : snapshot.getChildren()) {
-                    JobModel job = jobSnapshot.getValue(JobModel.class);
-                    if (job != null) {
-                        jobList.add(job);
-                        fullJobList.add(job);
-                    }
-                }
-                jobAdapter.updateJobs(jobList); // Update the adapter with all jobs
+                fullJobList.clear();
+                jobList.addAll(jobs);
+                fullJobList.addAll(jobs);
+                jobAdapter.updateJobs(jobList);
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("Firebase", "Failed to load jobs", error.toException());
+            public void onError(String error) {
+                // Handle error
             }
         });
     }
 
-    private void filterJobs(String searchQuery) {
-        List<JobModel> filteredJobs = new ArrayList<>();
-        for (JobModel job : fullJobList) {
-            if (job.getTitle().toLowerCase().contains(searchQuery.toLowerCase()) ||
-                    job.getCompany().toLowerCase().contains(searchQuery.toLowerCase()) ||
-                    job.getLocation().toLowerCase().contains(searchQuery.toLowerCase())) {
-                filteredJobs.add(job);
-            }
+    private void searchJobs() {
+        String query = searchInput.getText().toString().trim();
+        if (!query.isEmpty()) {
+            List<JobModel> filteredJobs = jobFilterManager.filterJobs(fullJobList, query);
+            jobAdapter.updateJobs(filteredJobs);
+            clearSearchButton.setVisibility(View.VISIBLE);
         }
-        jobAdapter.updateJobs(filteredJobs); // Update the adapter with filtered jobs
     }
 
     private void restoreFullList() {
-        jobAdapter.updateJobs(fullJobList); // Restore original list
+        jobAdapter.updateJobs(fullJobList);
+        clearSearchButton.setVisibility(View.GONE);
+    }
+
+    private void openFilterPage() {
+        Intent intent = new Intent(SearcherDashboard.this, FilterPage.class);
+        startActivityForResult(intent, FILTER_REQUEST_CODE);
+    }
+
+    private void logoutUser() {
+        FirebaseAuth.getInstance().signOut();
+        startActivity(new Intent(SearcherDashboard.this, LoginActivity.class));
+        finish();
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == FILTER_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
@@ -236,7 +236,7 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
             String company = data.getStringExtra("company");
             String location = data.getStringExtra("location");
 
-            // Display applied filters in TextView
+            // Display applied filters
             String filterSummary = "Filters Applied:\n"
                     + "Job Title: " + jobTitle + "\n"
                     + "Salary: " + minSalary + " - " + maxSalary + "\n"
@@ -245,7 +245,9 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
 
             tvFilteredResults.setText(filterSummary);
 
-            applyFilters(jobTitle, minSalary, maxSalary, company, location);
+            // Apply filters
+            List<JobModel> filteredJobs = jobFilterManager.applyFilters(fullJobList, jobTitle, minSalary, maxSalary, company, location);
+            jobAdapter.updateJobs(filteredJobs);
         }
     }
 
