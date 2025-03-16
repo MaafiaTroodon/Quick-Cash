@@ -45,6 +45,7 @@ dependencies {
     implementation(libs.espresso.intents)
     implementation(libs.espresso.contrib)
     implementation("com.google.android.material:material:1.9.0")
+    implementation(libs.recyclerview)
     testImplementation ("org.mockito:mockito-core:4.0.0")
     testImplementation ("org.mockito:mockito-inline:4.0.0")
 

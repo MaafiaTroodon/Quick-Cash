@@ -1,17 +1,16 @@
 package com.example.quickcash.util;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.quickcash.R;
 import com.example.quickcash.model.JobModel;
-
+import com.example.quickcash.ui.JobDetailsActivity;
 import java.util.List;
 
 public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobViewHolder> {
@@ -21,7 +20,6 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobViewHolder> {
     public JobAdapter(List<JobModel> jobList) {
         this.jobList = jobList;
     }
-
 
     @NonNull
     @Override
@@ -38,8 +36,14 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobViewHolder> {
         holder.location.setText(job.getLocation());
         holder.salary.setText("$" + job.getSalaryText());
         holder.prefer.setText("Prefer this employer");
-    }
 
+        // Set up the click listener for the description button
+        holder.descriptionButton.setOnClickListener(view -> {
+            Intent intent = new Intent(view.getContext(), JobDetailsActivity.class);
+            intent.putExtra("job", job);
+            view.getContext().startActivity(intent);
+        });
+    }
 
     @Override
     public int getItemCount() {
@@ -61,6 +65,7 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobViewHolder> {
         public TextView location;
         public TextView salary;
         public Button prefer;
+        public Button descriptionButton;
 
         public JobViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -68,17 +73,15 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobViewHolder> {
             company = itemView.findViewById(R.id.companyName);
             location = itemView.findViewById(R.id.jobLocation);
             salary = itemView.findViewById(R.id.salaryText);
+            descriptionButton = itemView.findViewById(R.id.descriptionButton);
             prefer = itemView.findViewById(R.id.preferredListButton);
-            prefer.setOnClickListener(view -> listener.onItemClick(view, getAdapterPosition()));
+            //prefer.setOnClickListener(view -> listener.onItemClick(view, getAdapterPosition()));
         }
-    }
-    /*onClickListener*/
-    public void setItemClickListener(ButtonClickListener listener){
-        this.listener=listener;
     }
 
     public interface ButtonClickListener {
-        public void onItemClick(View view, int position);
+        void onItemClick(View view, int position);
+        void onDescriptionClick(View view, int position); // New method for description button click
     }
 }
 
