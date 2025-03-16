@@ -40,7 +40,8 @@
             android:exported="true" /> <!-- Searcher Dashboard Activity -->
         <activity
             android:name=".ui.SearcherDashboard"
-            android:exported="true" /> <!-- Login Activity Activity -->
+            android:exported="true" />
+        <!-- Login Activity Activity -->
         <activity
             android:name=".ui.LoginActivity"
             android:exported="true" />

@@ -1,9 +1,11 @@
-// SearcherDashboardActivity.java
 package com.example.quickcash.ui;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,8 +17,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.quickcash.R;
 import com.example.quickcash.core.Users;
 import com.example.quickcash.database.Firebase;
@@ -25,6 +30,14 @@ import com.example.quickcash.manager.JobFilterManager;
 import com.example.quickcash.model.JobModel;
 import com.example.quickcash.model.PreferEmployerModel;
 import com.example.quickcash.util.JobAdapter;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.BuildConfig;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -32,12 +45,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Scanner;
 
 public class SearcherDashboard extends AppCompatActivity implements JobAdapter.ButtonClickListener {
     public static final int FILTER_REQUEST_CODE = 1;
@@ -61,6 +78,9 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
     private JobFilterManager jobFilterManager;
     private JobDataManager jobDataManager;
 
+    private FusedLocationProviderClient fusedLocationClient;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +94,7 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
         filterButton = findViewById(R.id.filterButton);
         tvFilteredResults = findViewById(R.id.tvFilteredResults);
         logoutButton = findViewById(R.id.LogOut);
+        locationText = findViewById(R.id.locationText);
 
         // Initialize managers
         jobFilterManager = new JobFilterManager();
@@ -90,9 +111,6 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
         // Load jobs
         loadAllJobs();
 
-        loadAllJobs(); // Load all jobs initially
-
-        logoutButton = findViewById(R.id.LogOut);
         preferredJobButton = findViewById(R.id.PreferredList);
         auth = FirebaseAuth.getInstance();
 
@@ -101,38 +119,12 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
         Firebase firebase = new Firebase();
         users = new Users(firebase);
 
-        usersRef = FirebaseDatabase.getInstance().getReference("Users");
-        String sanitizedEmail = currentUserEmail.replace(".", ",");
-        usersRef.child(sanitizedEmail).child("preferredJob").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot jobSnapshot : snapshot.getChildren()) {
-                    PreferEmployerModel job = jobSnapshot.getValue(PreferEmployerModel.class);
-                    preferredJob.add(job);
-                }
-                Log.d("JobList", "Total jobs fetched: " + preferredJob.size());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("Firebase", "Failed to read jobs", error.toException());
-            }
-        });
-
-        // Retrieve location data from Intent
-        double latitude = getIntent().getDoubleExtra("latitude", 0.0);
-        double longitude = getIntent().getDoubleExtra("longitude", 0.0);
-
-        // Convert coordinates to address
-        String address = getAddressFromCoordinates(latitude, longitude);
-
-        // Display address
-        locationText.setText("Your Location: " + address);
+        checkLocationPermissions();
 
         searchButton.setOnClickListener(v -> {
             String query = searchInput.getText().toString().trim();
             if (query.isEmpty()) {
-                restoreFullList(); // Restore original job list when search is empty
+                restoreFullList();
             } else {
                 filterJobs(query);
             }
@@ -172,19 +164,103 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
         });
     }
 
+    private void checkLocationPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+        } else {
+            getCurrentLocation();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getCurrentLocation();
+            } else {
+                Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void getCurrentLocation() {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(10000); // 10 seconds
+
+        fusedLocationClient.requestLocationUpdates(locationRequest, new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    if (location != null) {
+                        double latitude = location.getLatitude();
+                        double longitude = location.getLongitude();
+                        Log.d("Location", "Latitude: " + latitude + ", Longitude: " + longitude);
+                        String address = getAddressFromCoordinates(latitude, longitude);
+                        locationText.setText("Your Location: " + address);
+                        fusedLocationClient.removeLocationUpdates(this); // Stop updates after getting the location
+                        break;
+                    }
+                }
+            }
+        }, null);
+    }
+
     private String getAddressFromCoordinates(double latitude, double longitude) {
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
         try {
             List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
             if (addresses != null && !addresses.isEmpty()) {
                 Address address = addresses.get(0);
-                return address.getAddressLine(0);
+
+                // Build the address string
+                StringBuilder addressBuilder = new StringBuilder();
+                for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
+                    addressBuilder.append(address.getAddressLine(i)).append("\n");
+                }
+
+                // Log the address
+                Log.d("Geocoder", "Address fetched: " + addressBuilder.toString());
+
+                return addressBuilder.toString().trim(); // Return the full address
+            } else {
+                Log.d("Geocoder", "No address found for coordinates: " + latitude + ", " + longitude);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e("Geocoder", "Error fetching address using Geocoder", e);
+
+            // Fallback to Google Maps Geocoding API
+            return getAddressFromGoogleMapsAPI(latitude, longitude);
         }
         return "Unable to fetch address";
     }
+
+    private String getAddressFromGoogleMapsAPI(double latitude, double longitude) {
+        String apiKey = "AIzaSyBPfKk4y2T1T_tN1-QwB0dNKOQMtUHiaTM";
+        String url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latitude + "," + longitude + "&key=" + apiKey;
+
+        try {
+            String json = new Scanner(new URL(url).openStream(), "UTF-8").useDelimiter("\\A").next();
+            JSONObject response = new JSONObject(json);
+            if (response.getString("status").equals("OK")) {
+                return response.getJSONArray("results").getJSONObject(0).getString("formatted_address");
+            }
+        } catch (Exception e) {
+            Log.e("Geocoder", "Error fetching address from Google Maps API", e);
+        }
+        return "Unable to fetch address";
+    }
+
     public List<JobModel> getFilteredJobs() {
         return jobList;
     }
@@ -330,7 +406,6 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
         LocalDate now = LocalDate.now();
         String addedTime = now.getYear() + "-" + now.getMonthValue() + "-" + now.getDayOfMonth() + "-" + now.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
         PreferEmployerModel preferEmployerModel = new PreferEmployerModel(selectedItem, addedTime);
-    //    Toast.makeText(this, selectedItem.getCompany(), Toast.LENGTH_SHORT).show();
         addToPreferredList(preferEmployerModel);
     }
 
@@ -340,13 +415,11 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
         LocalDate now = LocalDate.now();
         String addedTime = now.getYear() + "-" + now.getMonthValue() + "-" + now.getDayOfMonth() + "-" + now.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
         PreferEmployerModel preferEmployerModel = new PreferEmployerModel(selectedItem, addedTime);
-    //    Toast.makeText(this, selectedItem.getCompany(), Toast.LENGTH_SHORT).show();
         addToPreferredList(preferEmployerModel);
-
     }
 
     protected void addToPreferredList(PreferEmployerModel preferEmployerModel) {
-        if(!preferredJob.contains(preferEmployerModel)) {
+        if (!preferredJob.contains(preferEmployerModel)) {
             preferredJob.add(preferEmployerModel);
             Toast.makeText(this, preferEmployerModel.getCompany() + " Is added to preferred list", Toast.LENGTH_SHORT).show();
         } else {
