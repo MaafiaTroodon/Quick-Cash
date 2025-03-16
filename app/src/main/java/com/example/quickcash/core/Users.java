@@ -20,6 +20,18 @@ public class Users {
     private final DatabaseReference usersRef;
     private final FirebaseAuth auth;
 
+    // 🔹 Define constants for frequently used messages
+    private static final String DATABASE_ERROR_MSG = "Database error: ";
+    private static final String EMAIL_NOT_FOUND_MSG = "Email not found.";
+    private static final String PASSWORD_MISMATCH_MSG = "Passwords do not match.";
+    private static final String SECURITY_ANSWERS_MISMATCH_MSG = "Security answers do not match.";
+    private static final String USER_ADDED_MSG = "User added successfully!";
+    private static final String ROLE_NOT_FOUND_MSG = "Role not found.";
+    private static final String LOGIN_FAILED_MSG = "Login failed: ";
+    private static final String PREFERRED_JOB_UPDATED_MSG = "Preferred job updated successfully.";
+    private static final String PREFERRED_JOB_FAILED_MSG = "Failed to update preferred job: ";
+
+
     public Users(Firebase firebase) {
         this.auth = FirebaseAuth.getInstance();
         this.usersRef = firebase.getDb().getReference("Users");
@@ -42,7 +54,7 @@ public class Users {
                     usersRef.child(sanitizedEmail).setValue(newUser)
                             .addOnCompleteListener(item -> {
                                 if (item.isSuccessful()) {
-                                    callback.onSuccess("User added successfully!");
+                                    callback.onSuccess(USER_ADDED_MSG);
                                 } else {
                                     callback.onError(Objects.requireNonNull(item.getException()).getMessage());
                                 }
@@ -65,7 +77,7 @@ public class Users {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.exists()) {
-                    callback.onError("Email not found.");
+                    callback.onError(EMAIL_NOT_FOUND_MSG);
                     return;
                 }
 
@@ -84,13 +96,13 @@ public class Users {
                 );
 
                 if (!isMatch) {
-                    callback.onError("Security answers do not match.");
+                    callback.onError(SECURITY_ANSWERS_MISMATCH_MSG);
                     return;
                 }
 
                 // Check if passwords match
                 if (!newPassword.equals(confirmPassword)) {
-                    callback.onError("Passwords do not match.");
+                    callback.onError(PASSWORD_MISMATCH_MSG);
                     return;
                 }
 
@@ -110,10 +122,13 @@ public class Users {
                         });
             }
 
+            private static final String DATABASE_ERROR_MSG = "Database error: ";
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                callback.onError("Database error: " + databaseError.getMessage());
+                callback.onError(DATABASE_ERROR_MSG + databaseError.getMessage());
             }
+
         });
     }
 
@@ -130,17 +145,17 @@ public class Users {
                                     String role = dataSnapshot.getValue(String.class);
                                     callback.onSuccess(role); // Pass the role to the callback
                                 } else {
-                                    callback.onError("Role not found.");
+                                    callback.onError(ROLE_NOT_FOUND_MSG);
                                 }
                             }
 
                             @Override
                             public void onCancelled(@NonNull DatabaseError databaseError) {
-                                callback.onError("Database error: " + databaseError.getMessage());
+                                callback.onError(DATABASE_ERROR_MSG + databaseError.getMessage());
                             }
                         });
                     } else {
-                        callback.onError("Login failed: " + task.getException().getMessage());
+                        callback.onError(LOGIN_FAILED_MSG + task.getException().getMessage());
                     }
                 });
     }
@@ -152,7 +167,7 @@ public class Users {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
-                    callback.onError("Email not found.");
+                    callback.onError(EMAIL_NOT_FOUND_MSG);
                     return;
                 }
 
@@ -163,10 +178,10 @@ public class Users {
                             .addOnCompleteListener(task -> {
                                 if (task.isSuccessful()) {
                                     System.out.println("preferred job successfully updated in Firebase.");
-                                    callback.onSuccess("preferred job updated successfully.");
+                                    callback.onSuccess(PREFERRED_JOB_UPDATED_MSG);
                                 } else {
-                                    System.out.println("Failed to update preferred job: " + task.getException());
-                                    callback.onError("Failed to preferred job: " + task.getException());
+                                    System.out.println(PREFERRED_JOB_FAILED_MSG + task.getException());
+                                    callback.onError(PREFERRED_JOB_FAILED_MSG + task.getException());
                                 }
                             });
                 }
@@ -175,7 +190,7 @@ public class Users {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                callback.onError("Database error: " + error.getMessage());
+                callback.onError(DATABASE_ERROR_MSG + error.getMessage());
             }
         });
     }
