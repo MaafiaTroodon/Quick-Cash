@@ -145,17 +145,17 @@ public class Users {
                                     String role = dataSnapshot.getValue(String.class);
                                     callback.onSuccess(role); // Pass the role to the callback
                                 } else {
-                                    callback.onError(ROLE_NOT_FOUND_MSG);
+                                    callback.onError("Role not found.");
                                 }
                             }
 
                             @Override
                             public void onCancelled(@NonNull DatabaseError databaseError) {
-                                callback.onError(DATABASE_ERROR_MSG + databaseError.getMessage());
+                                callback.onError("Database error: " + databaseError.getMessage());
                             }
                         });
                     } else {
-                        callback.onError(LOGIN_FAILED_MSG + task.getException().getMessage());
+                        callback.onError("Login failed: " + task.getException().getMessage());
                     }
                 });
     }
@@ -195,6 +195,46 @@ public class Users {
         });
     }
 
+    public void loadPreferredList(String email, LoadPreferredListCallback callback) {
+        // Replace "." with "," to match your Firebase keys
+        String sanitizedEmail = email.replace(".", ",");
+
+        // Point to the "preferred_list" node for this user
+        DatabaseReference preferredListRef = usersRef.child(sanitizedEmail).child("preferred_list");
+
+        // Read data once (no real-time updates needed for a simple load)
+        preferredListRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // If the node doesn't exist or is empty, return an empty list
+                if (!dataSnapshot.exists()) {
+                    callback.onSuccess(java.util.Collections.emptyList());
+                    return;
+                }
+
+                // Prepare a list to hold all preferred items
+                List<PreferEmployerModel> preferredList = new java.util.ArrayList<>();
+
+                // Each child should map to a PreferEmployerModel
+                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                    PreferEmployerModel item = childSnapshot.getValue(PreferEmployerModel.class);
+                    if (item != null) {
+                        preferredList.add(item);
+                    }
+                }
+
+                // Return the full list via callback
+                callback.onSuccess(preferredList);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                callback.onError("Database error: " + databaseError.getMessage());
+            }
+        });
+    }
+
+
 
 
 
@@ -217,6 +257,11 @@ public class Users {
 
     public interface UsernameCallback {
         void onResult(boolean exists);
+        void onError(String error);
+    }
+
+    public interface LoadPreferredListCallback {
+        void onSuccess(List<PreferEmployerModel> preferredList);
         void onError(String error);
     }
 

@@ -50,6 +50,10 @@
         <activity
             android:name=".ui.FilterPage"
             android:exported="true" />
+        <activity android:name=".ui.EmployeeDashboard"
+            android:exported="true" />
+        <activity android:name=".ui.CreatorPreferredList"
+            android:exported="true" />
 
         <activity android:name=".ui.JobDetailsActivity" />
 

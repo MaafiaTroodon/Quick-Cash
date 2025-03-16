@@ -1,7 +1,7 @@
 package com.example.quickcash.ui;
 
 import android.content.Intent;
-import android.Manifest; // Import for permissions
+import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -31,7 +31,7 @@ import java.util.Locale;
 public class CreatorDashboard extends AppCompatActivity {
 
     private TextView welcomeText, locationText;
-    private Button logoutButton, jobCreationButton, viewSearchersButton;
+    private Button logoutButton, jobCreationButton, viewSearchersButton, viewPreferredListButton;
     private FirebaseAuth auth;
 
     private LocationManager locationManager;
@@ -48,24 +48,33 @@ public class CreatorDashboard extends AppCompatActivity {
         logoutButton = findViewById(R.id.LogOut);
         jobCreationButton = findViewById(R.id.jobCreationButton);
         viewSearchersButton = findViewById(R.id.viewSearchersButton);
-        locationText = findViewById(R.id.locationText); // Added from US1-Location
+        viewPreferredListButton = findViewById(R.id.viewPreferredListButton); // New button initialization
+        locationText = findViewById(R.id.locationText);
 
         auth = FirebaseAuth.getInstance();
 
         // Initialize LocationManager
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-        // ✅ Open CreateJobPage when button is clicked
+        // Open CreateJobPage when button is clicked
         jobCreationButton.setOnClickListener(v -> {
             Intent intent = new Intent(CreatorDashboard.this, CreateJobPage.class);
             startActivity(intent);
         });
 
+        // Open CreatorEmployeeList when View Searchers button is clicked
         viewSearchersButton.setOnClickListener(v -> {
             Intent intent = new Intent(CreatorDashboard.this, CreatorEmployeeList.class);
             startActivity(intent);
         });
 
+        // New: Open CreatorPreferredList when View Preferred List button is clicked
+        viewPreferredListButton.setOnClickListener(v -> {
+            Intent intent = new Intent(CreatorDashboard.this, CreatorPreferredList.class);
+            startActivity(intent);
+        });
+
+        // Logout button functionality
         logoutButton.setOnClickListener(v -> {
             new AlertDialog.Builder(CreatorDashboard.this)
                     .setMessage("Are you sure you want to log out?")
@@ -113,7 +122,6 @@ public class CreatorDashboard extends AppCompatActivity {
             public void onProviderDisabled(String provider) {
                 // No additional action needed when provider is disabled
             }
-
         };
     }
 
@@ -132,22 +140,28 @@ public class CreatorDashboard extends AppCompatActivity {
     }
 
     private void checkLocationPermissionAndStartUpdates() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_LOCATION_PERMISSION);
         } else {
             startLocationUpdates();
         }
     }
 
     private void startLocationUpdates() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
         }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_LOCATION_PERMISSION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {

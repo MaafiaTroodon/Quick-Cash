@@ -2,7 +2,6 @@ package com.example.quickcash.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -65,7 +64,6 @@ public class LoginActivity extends AppCompatActivity {
                     intent = new Intent(LoginActivity.this, CreatorDashboard.class);
                 } else if ("searcher".equalsIgnoreCase(role)) {
                     intent = new Intent(LoginActivity.this, SearcherDashboard.class);
-                    intent.putExtra("currentUser",email);
                 } else {
                     // Handle unknown roles
                     intent = new Intent(LoginActivity.this, SearcherDashboard.class);
