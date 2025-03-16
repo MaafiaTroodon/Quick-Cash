@@ -100,13 +100,20 @@ public class CreatorDashboard extends AppCompatActivity {
             }
 
             @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {}
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+                // Method intentionally left empty as it is not required for our use case
+            }
 
             @Override
-            public void onProviderEnabled(String provider) {}
+            public void onProviderEnabled(String provider) {
+                // No additional action needed when provider is enabled
+            }
 
             @Override
-            public void onProviderDisabled(String provider) {}
+            public void onProviderDisabled(String provider) {
+                // No additional action needed when provider is disabled
+            }
+
         };
     }
 
