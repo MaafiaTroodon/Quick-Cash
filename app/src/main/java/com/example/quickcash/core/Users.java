@@ -3,6 +3,7 @@ package com.example.quickcash.core;
 import androidx.annotation.NonNull;
 
 import com.example.quickcash.database.Firebase;
+import com.example.quickcash.model.PreferEmployeeModel;
 import com.example.quickcash.model.PreferEmployerModel;
 import com.example.quickcash.model.SecurityModel;
 import com.example.quickcash.model.UserModel;
@@ -200,7 +201,7 @@ public class Users {
         String sanitizedEmail = email.replace(".", ",");
 
         // Point to the "preferred_list" node for this user
-        DatabaseReference preferredListRef = usersRef.child(sanitizedEmail).child("preferred_list");
+        DatabaseReference preferredListRef = usersRef.child(sanitizedEmail).child("preferredEmployees");
 
         // Read data once (no real-time updates needed for a simple load)
         preferredListRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -213,11 +214,11 @@ public class Users {
                 }
 
                 // Prepare a list to hold all preferred items
-                List<PreferEmployerModel> preferredList = new java.util.ArrayList<>();
+                List<PreferEmployeeModel> preferredList = new java.util.ArrayList<>();
 
                 // Each child should map to a PreferEmployerModel
                 for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-                    PreferEmployerModel item = childSnapshot.getValue(PreferEmployerModel.class);
+                    PreferEmployeeModel item = childSnapshot.getValue(PreferEmployeeModel.class);
                     if (item != null) {
                         preferredList.add(item);
                     }
@@ -261,7 +262,7 @@ public class Users {
     }
 
     public interface LoadPreferredListCallback {
-        void onSuccess(List<PreferEmployerModel> preferredList);
+        void onSuccess(List<PreferEmployeeModel> preferredList);
         void onError(String error);
     }
 
