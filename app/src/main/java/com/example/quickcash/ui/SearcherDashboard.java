@@ -10,6 +10,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,6 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.quickcash.R;
 import com.example.quickcash.core.Users;
 import com.example.quickcash.database.Firebase;
+import com.example.quickcash.manager.JobDataManager;
+import com.example.quickcash.manager.JobFilterManager;
 import com.example.quickcash.model.JobModel;
 import com.example.quickcash.model.PreferEmployerModel;
 import com.example.quickcash.util.JobAdapter;
@@ -51,8 +56,10 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
     private TextView tvFilteredResults; // New TextView for showing applied filters
     private TextView locationText; // Added from US1-Location
     private Users users;
-    private Button logoutButton, preferredJobButton;
+    private Button logoutButton, preferredJobButton, clearSearchButton;
     private FirebaseAuth auth;
+    private JobFilterManager jobFilterManager;
+    private JobDataManager jobDataManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -198,6 +205,18 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
                 // Handle error
             }
         });
+    }
+
+    private void filterJobs(String searchQuery) {
+        List<JobModel> filteredJobs = new ArrayList<>();
+        for (JobModel job : fullJobList) {
+            if (job.getTitle().toLowerCase().contains(searchQuery.toLowerCase()) ||
+                    job.getCompany().toLowerCase().contains(searchQuery.toLowerCase()) ||
+                    job.getLocation().toLowerCase().contains(searchQuery.toLowerCase())) {
+                filteredJobs.add(job);
+            }
+        }
+        jobAdapter.updateJobs(filteredJobs); // Update the adapter with filtered jobs
     }
 
     private void searchJobs() {
