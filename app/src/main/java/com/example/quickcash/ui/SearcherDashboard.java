@@ -66,9 +66,9 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
         searchInput = findViewById(R.id.searchInput);
         searchButton = findViewById(R.id.searchButton);
+        clearSearchButton = findViewById(R.id.clearSearchButton);
         filterButton = findViewById(R.id.filterButton);
         tvFilteredResults = findViewById(R.id.tvFilteredResults);
         locationText = findViewById(R.id.locationText); // Added from US1-Location
@@ -122,12 +122,17 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
 
         searchButton.setOnClickListener(v -> {
             String query = searchInput.getText().toString().trim();
-            if (query.isEmpty()) {
-                restoreFullList(); // Restore original job list when search is empty
-            } else {
+            if (!query.isEmpty()) {
                 filterJobs(query);
+                clearSearchButton.setVisibility(View.VISIBLE);
             }
         });
+
+        clearSearchButton.setOnClickListener(v -> {
+            restoreFullList();
+            clearSearchButton.setVisibility(View.GONE); // Hide "Clear Search"
+        });
+
 
         filterButton.setOnClickListener(v -> {
             Intent intent = new Intent(SearcherDashboard.this, FilterPage.class);
