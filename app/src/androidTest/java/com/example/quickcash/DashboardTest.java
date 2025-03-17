@@ -14,7 +14,12 @@ import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
+import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiObject;
+import androidx.test.uiautomator.UiObjectNotFoundException;
+import androidx.test.uiautomator.UiSelector;
 
 import com.example.quickcash.R;
 import com.example.quickcash.ui.CreatorDashboard;
@@ -50,7 +55,12 @@ public class DashboardTest {
     }
 
     @Test
-    public void testLogoutConfirmationDialogAppears() {
+    public void testLogoutConfirmationDialogAppears() throws UiObjectNotFoundException {
+        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        UiObject allowLocationButton = device.findObject(new UiSelector().text("While using the app"));
+        if (allowLocationButton.exists() && allowLocationButton.isEnabled()) {
+            allowLocationButton.click();
+        }
         // Click the logout button
         onView(withId(R.id.LogOut)).perform(click());
 

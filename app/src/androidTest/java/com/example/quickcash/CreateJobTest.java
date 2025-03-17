@@ -15,6 +15,11 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiObject;
+import androidx.test.uiautomator.UiObjectNotFoundException;
+import androidx.test.uiautomator.UiSelector;
 
 import com.example.quickcash.database.Firebase;
 import com.example.quickcash.ui.LoginActivity;
@@ -37,13 +42,18 @@ public class CreateJobTest {
     private Firebase firebase = new Firebase();
 
     @Test
-    public void testErrorJobCreation() throws InterruptedException {
+    public void testErrorJobCreation() throws InterruptedException, UiObjectNotFoundException {
 
         onView(withId(R.id.editTextEmail)).perform(typeText("taiki@gmail.com"), closeSoftKeyboard());
         onView(withId(R.id.editTextPassword)).perform(typeText("Taiki123@"), closeSoftKeyboard());
         onView(withId(R.id.buttonLogin)).perform(click());
 
         Thread.sleep(1000);
+        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        UiObject allowLocationButton = device.findObject(new UiSelector().text("While using the app"));
+        if (allowLocationButton.exists() && allowLocationButton.isEnabled()) {
+            allowLocationButton.click();
+        }
         onView(withId(R.id.dashboardLayout))
                 .check(matches(ViewMatchers.isDisplayed()));
 
@@ -64,12 +74,18 @@ public class CreateJobTest {
 
 
     @Test
-    public void testValidJobCreation() throws InterruptedException {
+    public void testValidJobCreation() throws InterruptedException, UiObjectNotFoundException {
         onView(withId(R.id.editTextEmail)).perform(typeText("taiki@gmail.com"), closeSoftKeyboard());
         onView(withId(R.id.editTextPassword)).perform(typeText("Taiki123@"), closeSoftKeyboard());
         onView(withId(R.id.buttonLogin)).perform(click());
 
+        // here a location asks to allow location, press the "While using the app" button
         Thread.sleep(1000);
+        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        UiObject allowLocationButton = device.findObject(new UiSelector().text("While using the app"));
+        if (allowLocationButton.exists() && allowLocationButton.isEnabled()) {
+            allowLocationButton.click();
+        }
         onView(withId(R.id.dashboardLayout))
                 .check(matches(ViewMatchers.isDisplayed()));
 
