@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -16,10 +17,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quickcash.R;
+import com.example.quickcash.core.Users;
+import com.example.quickcash.database.Firebase;
 import com.example.quickcash.model.JobModel;
-import com.example.quickcash.ui.FilterPage;
-import com.example.quickcash.ui.JobAdapter;
-import com.example.quickcash.ui.LoginActivity;
+import com.example.quickcash.model.PreferEmployerModel;
+import com.example.quickcash.util.JobAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -27,10 +29,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.time.LocalDate;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-public class SearcherDashboard extends AppCompatActivity {
+public class SearcherDashboard extends AppCompatActivity implements JobAdapter.ButtonClickListener {
     public static final int FILTER_REQUEST_CODE = 1;
 
     private RecyclerView recyclerView;
@@ -41,7 +46,11 @@ public class SearcherDashboard extends AppCompatActivity {
     private DatabaseReference jobsRef;
 
     private EditText searchInput;
-    private Button searchButton;
+    private Button searchButton, preferredJobButton;
+    private DatabaseReference usersRef;
+    public List<PreferEmployerModel> preferredJob;
+    private Users users;
+    private String currentUserEmail;
     private Button filterButton;
     private TextView tvFilteredResults; // New TextView for showing applied filters
 
@@ -62,12 +71,40 @@ public class SearcherDashboard extends AppCompatActivity {
         filterButton = findViewById(R.id.filterButton);
         tvFilteredResults = findViewById(R.id.tvFilteredResults);
 
+        auth = FirebaseAuth.getInstance();
+        currentUserEmail = (String) getIntent().getSerializableExtra("currentUser");
+        preferredJobButton = findViewById(R.id.PreferredList);
+
+        preferredJob = new ArrayList<>();
         jobList = new ArrayList<>();
         fullJobList = new ArrayList<>();
         jobAdapter = new JobAdapter(jobList);
         recyclerView.setAdapter(jobAdapter);
+        jobAdapter.setItemClickListener(this);
+
+        Firebase firebase = new Firebase();
+        users = new Users(firebase);
 
         jobsRef = FirebaseDatabase.getInstance().getReference("Jobs");
+
+        usersRef = FirebaseDatabase.getInstance().getReference("Users");
+        String sanitizedEmail = currentUserEmail.replace(".", ",");
+        usersRef.child(sanitizedEmail).child("preferredJob").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                for (DataSnapshot jobSnapshot : snapshot.getChildren()) {
+                    PreferEmployerModel job = jobSnapshot.getValue(PreferEmployerModel.class);
+                    preferredJob.add(job);
+                }
+                Log.d("JobList", "Total jobs fetched: " + preferredJob.size());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("Firebase", "Failed to read jobs", error.toException());
+            }
+        });
 
         loadAllJobs(); // Load all jobs initially
 
@@ -94,6 +131,27 @@ public class SearcherDashboard extends AppCompatActivity {
             Toast.makeText(SearcherDashboard.this, "Logged out successfully!", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(SearcherDashboard.this, LoginActivity.class));
             finish();
+        });
+
+        preferredJobButton.setOnClickListener(v -> {
+            PreferEmployerModel isTempIn = new PreferEmployerModel();
+            if(preferredJob.size()>=2 && preferredJob.contains(isTempIn)) {
+                preferredJob.remove(isTempIn);
+            }
+            Log.d("Current User Email!", currentUserEmail + "!");
+            users.setPreferredList(currentUserEmail, preferredJob, new Users.UserCallback() {
+                @Override
+                public void onSuccess(String message) {
+                    Intent intent = new Intent(SearcherDashboard.this, SearcherPreferredListDashboard.class);
+                    intent.putExtra("currentUserEmail",  currentUserEmail);
+                    startActivity(intent);
+                }
+
+                @Override
+                public void onError(String error) {
+                    Toast.makeText(SearcherDashboard.this, error, Toast.LENGTH_LONG).show();
+                }
+            });
         });
 
     }
@@ -216,5 +274,25 @@ public class SearcherDashboard extends AppCompatActivity {
                 Log.e("Firebase", "Failed to fetch filtered jobs", error.toException());
             }
         });
+
+
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+        JobModel selectedItem = jobAdapter.getItem(position);
+        LocalDate now = LocalDate.now();
+        String addedTime = now.getYear() + "-" + now.getMonthValue() + "-" + now.getDayOfMonth() + "-" + now.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
+        PreferEmployerModel preferEmployerModel = new PreferEmployerModel(selectedItem, addedTime);
+        addToPreferredList(preferEmployerModel);
+    }
+
+    protected void addToPreferredList(PreferEmployerModel preferEmployerModel) {
+        if (!preferredJob.contains(preferEmployerModel)) {
+            preferredJob.add(preferEmployerModel);
+            Toast.makeText(this, preferEmployerModel.getCompany() + " Is added to preferred list", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "This job is already in the list", Toast.LENGTH_SHORT).show();
+        }
     }
 }

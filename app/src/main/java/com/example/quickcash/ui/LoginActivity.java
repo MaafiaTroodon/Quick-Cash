@@ -65,6 +65,7 @@ public class LoginActivity extends AppCompatActivity {
                     intent = new Intent(LoginActivity.this, CreatorDashboard.class);
                 } else if ("searcher".equalsIgnoreCase(role)) {
                     intent = new Intent(LoginActivity.this, SearcherDashboard.class);
+                    intent.putExtra("currentUser",email);
                 } else {
                     // Handle unknown roles
                     intent = new Intent(LoginActivity.this, SearcherDashboard.class);

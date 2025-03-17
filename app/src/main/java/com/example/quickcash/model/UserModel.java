@@ -1,11 +1,15 @@
 package com.example.quickcash.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UserModel {
     private String username;
     private String email;
     private String password;
     private String role;
     private SecurityModel securityAns;
+    private List<PreferEmployerModel> preferredJob = new ArrayList<>();
 
     public UserModel() {
     }
@@ -15,6 +19,7 @@ public class UserModel {
         this.email = email;
         this.password = password;
         this.role = role;
+        this.preferredJob.add(createdTempModel());
     }
 
     public String getUsername() {
@@ -55,5 +60,14 @@ public class UserModel {
 
     public void setSecurityAns(SecurityModel securityAns) {
         this.securityAns = securityAns;
+    }
+    public List<PreferEmployerModel> getPreferredJob() { return preferredJob; }
+
+    public void setPreferredJob(List<PreferEmployerModel> jobModelList) {
+        preferredJob = jobModelList;
+    }
+
+    protected PreferEmployerModel createdTempModel() {
+        return new PreferEmployerModel();
     }
 }
