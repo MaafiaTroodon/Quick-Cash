@@ -56,6 +56,7 @@ dependencies {
     implementation(libs.recyclerview) // RecyclerView
     implementation(libs.play.services.maps) // Google Maps
     implementation(libs.play.services.location) // Google Location Services
+    implementation(libs.uiautomator)
 
     // Unit testing dependencies
     testImplementation("junit:junit:4.13.2") // JUnit for unit tests
