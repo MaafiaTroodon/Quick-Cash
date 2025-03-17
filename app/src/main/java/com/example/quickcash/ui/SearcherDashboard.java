@@ -114,6 +114,8 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
         preferredJobButton = findViewById(R.id.PreferredList);
         auth = FirebaseAuth.getInstance();
 
+        jobAdapter.setItemClickListener(this);
+
         currentUserEmail = (String) getIntent().getSerializableExtra("currentUser");
 
         Firebase firebase = new Firebase();

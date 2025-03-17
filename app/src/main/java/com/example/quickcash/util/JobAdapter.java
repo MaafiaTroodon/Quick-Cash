@@ -75,12 +75,17 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobViewHolder> {
             salary = itemView.findViewById(R.id.salaryText);
             descriptionButton = itemView.findViewById(R.id.descriptionButton);
             prefer = itemView.findViewById(R.id.preferredListButton);
-            //prefer.setOnClickListener(view -> listener.onItemClick(view, getAdapterPosition()));
+            prefer.setOnClickListener(view -> listener.onItemClick(view, getAdapterPosition()));
         }
     }
 
+    /*onClickListener*/
+    public void setItemClickListener(ButtonClickListener listener){
+        this.listener=listener;
+    }
+
     public interface ButtonClickListener {
-        void onItemClick(View view, int position);
+        public void onItemClick(View view, int position);
         void onDescriptionClick(View view, int position); // New method for description button click
     }
 }
