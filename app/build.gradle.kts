@@ -55,7 +55,8 @@ dependencies {
     implementation("com.google.android.material:material:1.9.0") // Material Design library
     implementation(libs.recyclerview) // RecyclerView
     implementation(libs.play.services.maps) // Google Maps
-    implementation(libs.play.services.location) // Google Location Services
+    implementation(libs.play.services.location)
+    implementation(libs.uiautomator) // Google Location Services
 
     // Unit testing dependencies
     testImplementation("junit:junit:4.13.2") // JUnit for unit tests
