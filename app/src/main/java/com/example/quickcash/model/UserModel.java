@@ -8,6 +8,7 @@ public class UserModel {
     private String email;
     private String password;
     private String role;
+    private double rating; // Add this field
     private SecurityModel securityAns;
     private List<PreferEmployerModel> preferredJob = new ArrayList<>();
     private List<PreferEmployeeModel> preferredEmployees = new ArrayList<>();
@@ -20,8 +21,19 @@ public class UserModel {
         this.email = email;
         this.password = password;
         this.role = role;
+        this.rating = 0.0; // Default rating
     }
 
+    // Add getter and setter for rating
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+
+    // Existing getters and setters...
     public String getUsername() {
         return username;
     }
@@ -67,6 +79,7 @@ public class UserModel {
     public void setPreferredJob(List<PreferEmployerModel> jobModelList) {
         preferredJob = jobModelList;
     }
+
     protected PreferEmployerModel createdTempModel() {
         return new PreferEmployerModel();
     }

@@ -46,10 +46,10 @@ public class Users {
             if (task.isSuccessful()) {
                 FirebaseUser firebaseUser = auth.getCurrentUser();
                 if (firebaseUser != null) {
-
-                    // Include security answers in UserModel
+                    // Include security answers and rating in UserModel
                     UserModel newUser = new UserModel(username, email, password, role);
                     newUser.setSecurityAns(securityAnswers);
+                    newUser.setRating(0.0); // Initialize rating to 0.0
 
                     // Store user under email instead of UID
                     usersRef.child(sanitizedEmail).setValue(newUser)
@@ -61,14 +61,24 @@ public class Users {
                                 }
                             });
                 }
-            }
-            else {
+            } else {
                 callback.onError(Objects.requireNonNull(task.getException()).getMessage());
             }
         });
     }
 
+    public void updateUserRating(String email, double newRating, UserCallback callback) {
+        String sanitizedEmail = email.replace(".", ",");
 
+        usersRef.child(sanitizedEmail).child("rating").setValue(newRating)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        callback.onSuccess("Rating updated successfully.");
+                    } else {
+                        callback.onError("Failed to update rating: " + task.getException().getMessage());
+                    }
+                });
+    }
     public void forgotPassword(String email, String ans1, String ans2, String ans3, String newPassword, String confirmPassword, UserCallback callback) {
         // Sanitize email to match Firebase database structure
         String sanitizedEmail = email.replace(".", ",");

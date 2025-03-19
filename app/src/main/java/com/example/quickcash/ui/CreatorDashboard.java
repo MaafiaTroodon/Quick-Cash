@@ -9,6 +9,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,9 +21,13 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.quickcash.R;
+import com.example.quickcash.model.UserModel;
 import com.example.quickcash.ui.CreateJobPage;
 import com.example.quickcash.ui.LoginActivity;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.util.List;
@@ -33,7 +38,7 @@ public class CreatorDashboard extends AppCompatActivity {
     private TextView welcomeText, locationText;
     private Button logoutButton, jobCreationButton, viewSearchersButton, viewPreferredListButton;
     private FirebaseAuth auth;
-
+    private TextView ratingText;
     private LocationManager locationManager;
     private LocationListener locationListener;
 
@@ -50,9 +55,10 @@ public class CreatorDashboard extends AppCompatActivity {
         viewSearchersButton = findViewById(R.id.viewSearchersButton);
         viewPreferredListButton = findViewById(R.id.viewPreferredListButton); // New button initialization
         locationText = findViewById(R.id.locationText);
+        ratingText = findViewById(R.id.ratingText);
 
         auth = FirebaseAuth.getInstance();
-
+        fetchUserRating();
         // Initialize LocationManager
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
@@ -93,7 +99,28 @@ public class CreatorDashboard extends AppCompatActivity {
         initializeLocationListener();
         checkLocationPermissionAndStartUpdates();
     }
+    private void fetchUserRating() {
+        String currentUserEmail = auth.getCurrentUser().getEmail();
+        String sanitizedEmail = currentUserEmail.replace(".", ",");
 
+        usersRef.child(sanitizedEmail).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    UserModel user = snapshot.getValue(UserModel.class);
+                    if (user != null) {
+                        double rating = user.getRating();
+                        ratingText.setText("Your Rating: " + rating + "/10");
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("Firebase", "Failed to fetch user rating", error.toException());
+            }
+        });
+    }
     private void initializeLocationListener() {
         locationListener = new LocationListener() {
             @Override
