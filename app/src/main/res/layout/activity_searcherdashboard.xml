@@ -97,13 +97,12 @@
         android:id="@+id/PreferredList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/square_button"
         android:padding="10dp"
         android:text="Preferred List"
-        android:textColor="#FFFFFF"
+        android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.138"
+        app:layout_constraintHorizontal_bias="0.157"
         app:layout_constraintStart_toStartOf="parent" />
 
     <LinearLayout
