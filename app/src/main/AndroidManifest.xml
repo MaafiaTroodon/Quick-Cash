@@ -54,7 +54,10 @@
         <activity android:name=".ui.CreatorPreferredList"
             android:exported="true" />
 
-        <activity android:name=".ui.JobDetailsActivity" />
+        <activity android:name=".ui.JobDetailsActivity"
+            android:exported="true" />
+        <activity android:name=".ui.Paypal"
+            android:exported="true" />
 
     </application>
 
