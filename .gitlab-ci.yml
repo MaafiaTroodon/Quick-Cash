@@ -65,6 +65,7 @@ lintDebug:
   interruptible: true
   stage: build
   script:
+    - echo "sdk.dir=$ANDROID_HOME" > local.properties
     - ./gradlew -Pci --console=plain :app:lintDebug -PbuildDir=lint
 
 # Make Project
@@ -83,11 +84,13 @@ debugTests:
   interruptible: true
   stage: test
   script:
+    - echo "sdk.dir=$ANDROID_HOME" > local.properties
     - ./gradlew -Pci --console=plain :app:testDebug
 
 unit_tests:
   stage: test
   script:
+    - echo "sdk.dir=$ANDROID_HOME" > local.properties
     - ./gradlew test
   artifacts:
     when: always
