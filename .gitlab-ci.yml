@@ -33,7 +33,7 @@ before_script:
   - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
 
   # Setup path as android_home for moving/exporting the downloaded sdk into it
-  - export ANDROID_HOME="${PWD}/android-home"
+  - export PATH=$PATH:${ANDROID_HOME}/cmdline-tools/cmdline-tools/bin/
   # Create a new directory at specified location
   - install -d $ANDROID_HOME
   # Here we are installing androidSDK tools from official source,
