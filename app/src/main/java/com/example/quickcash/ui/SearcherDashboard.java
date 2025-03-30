@@ -22,6 +22,10 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.quickcash.R;
 import com.example.quickcash.core.Users;
 import com.example.quickcash.database.Firebase;
@@ -35,30 +39,45 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.BuildConfig;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 public class SearcherDashboard extends AppCompatActivity implements JobAdapter.ButtonClickListener {
     public static final int FILTER_REQUEST_CODE = 1;
-
+    private static final String CREDENTIALS_FILE_PATH = "key.json";
+    private static final String PUSH_NOTIFICATION_ENDPOINT ="https://fcm.googleapis.com/v1/projects/quickcash-34895/messages:send";
+    private RequestQueue requestQueue;
+    private String token;
+    private Set<String> initialJobKeys = new HashSet<>();
     private RecyclerView recyclerView;
     private JobAdapter jobAdapter;
     private List<JobModel> jobList;
@@ -66,10 +85,12 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
     private List<JobModel> fullJobList; // Stores all jobs for restoring after search
     private String currentUserEmail;
     private DatabaseReference jobsRef;
+    private ChildEventListener jobsListener;
     private DatabaseReference usersRef;
     private EditText searchInput;
     private Button searchButton;
     private Button filterButton;
+    private Button btn; //temp
     private TextView tvFilteredResults; // New TextView for showing applied filters
     private TextView locationText; // Added from US1-Location
     private Users users;
@@ -86,6 +107,40 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_searcherdashboard);
 
+        getFCMToken();
+        jobsRef = FirebaseDatabase.getInstance().getReference("Jobs");
+
+        jobsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    initialJobKeys.add(child.getKey());
+                }
+                Log.d("Firebase", "Initial keys loaded: " + initialJobKeys.size());
+
+                addNewJobListener();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("Firebase", "Failed to load initial keys", error.toException());
+            }
+        });
+
+        FirebaseMessaging.getInstance().subscribeToTopic("NewJobs")
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        String msg = "Subscribed";
+                        if (!task.isSuccessful()) {
+                            msg = "Subscribe failed";
+                        }
+                        Log.d("Subscribed msg!!!", msg);
+                    }
+                });
+
+        requestQueue = Volley.newRequestQueue(this);
+
         // Initialize UI
         recyclerView = findViewById(R.id.recyclerView);
         searchInput = findViewById(R.id.searchInput);
@@ -95,6 +150,7 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
         tvFilteredResults = findViewById(R.id.tvFilteredResults);
         logoutButton = findViewById(R.id.LogOut);
         locationText = findViewById(R.id.locationText);
+        btn = findViewById(R.id.button); //temp
 
         // Initialize managers
         jobFilterManager = new JobFilterManager();
@@ -163,6 +219,52 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
                     Toast.makeText(SearcherDashboard.this, error, Toast.LENGTH_LONG).show();
                 }
             });
+        });
+
+        btn.setOnClickListener(v -> {
+            new Thread(() -> {
+                String accessToken = getAccessToken();
+                if (accessToken == null) {
+                    Log.e("FCM", "Access token is null");
+                    return;
+                }
+
+                String deviceToken = token;
+
+                JSONObject jsonPayload = new JSONObject();
+                try {
+                    JSONObject messageObj = new JSONObject();
+                    messageObj.put("token", deviceToken);
+
+                    JSONObject notificationObj = new JSONObject();
+                    notificationObj.put("title", "Job Updated");
+                    notificationObj.put("body", "This is a test message");
+                    messageObj.put("notification", notificationObj);
+
+                    jsonPayload.put("message", messageObj);
+                } catch (Exception e) {
+                    Log.e("FCM", "JSON Exception", e);
+                    return;
+                }
+
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                        Request.Method.POST,
+                        PUSH_NOTIFICATION_ENDPOINT,
+                        jsonPayload,
+                        response -> Log.d("FCM", "Message sent successfully: " + response.toString()),
+                        error -> Log.e("FCM", "Error sending message", error)
+                ) {
+                    @Override
+                    public Map<String, String> getHeaders() {
+                        Map<String, String> headers = new HashMap<>();
+                        headers.put("Content-Type", "application/json; UTF-8");
+                        headers.put("Authorization", "Bearer " + accessToken);
+                        return headers;
+                    }
+                };
+
+                runOnUiThread(() -> requestQueue.add(jsonObjectRequest));
+            }).start();
         });
     }
 
@@ -426,6 +528,118 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
             Toast.makeText(this, preferEmployerModel.getCompany() + " Is added to preferred list", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "This job is already in the list", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void addNewJobListener() {
+        jobsListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                String key = snapshot.getKey();
+                String employerEmail = snapshot.child("employerEmail").getValue(String.class);
+                JobModel jobModel = snapshot.getValue(JobModel.class);
+
+                if (!initialJobKeys.contains(key)) {
+                    Log.d("New Job!!", "Job updated (new): " + key);
+                    initialJobKeys.add(key);
+
+                    new Thread(() -> {
+                        String accessToken = getAccessToken();
+                        if (accessToken == null) {
+                            Log.e("FCM", "Access token is null");
+                            return;
+                        }
+
+                        String deviceToken = token;
+
+                        JSONObject jsonPayload = new JSONObject();
+                        try {
+                            JSONObject messageObj = new JSONObject();
+                            messageObj.put("token", deviceToken);
+
+                            JSONObject notificationObj = new JSONObject();
+                            notificationObj.put("title", "Job Updated");
+                            notificationObj.put("body", employerEmail + "has posted new job");
+                            messageObj.put("notification", notificationObj);
+
+                            // Data part: Including jobModel JSON
+                            JSONObject dataObj = new JSONObject();
+                            dataObj.put("job", jobModel.toJson());
+                            messageObj.put("data", dataObj);
+
+                            jsonPayload.put("message", messageObj);
+                        } catch (Exception e) {
+                            Log.e("FCM", "JSON Exception", e);
+                            return;
+                        }
+
+                        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                                Request.Method.POST,
+                                PUSH_NOTIFICATION_ENDPOINT,
+                                jsonPayload,
+                                response -> Log.d("FCM", "Message sent successfully: " + response.toString()),
+                                error -> Log.e("FCM", "Error sending message", error)
+                        ) {
+                            @Override
+                            public Map<String, String> getHeaders() {
+                                Map<String, String> headers = new HashMap<>();
+                                headers.put("Content-Type", "application/json; UTF-8");
+                                headers.put("Authorization", "Bearer " + accessToken);
+                                return headers;
+                            }
+                        };
+
+                        runOnUiThread(() -> requestQueue.add(jsonObjectRequest));
+                    }).start();
+
+                } else {
+//                    Log.d("Ignored Job!!", "Ignored existing job: " + key);
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("Firebase", "ChildEventListener cancelled", error.toException());
+            }
+        };
+
+        jobsRef.addChildEventListener(jobsListener);
+    }
+
+    protected void getFCMToken() {
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+            if(task.isSuccessful()) {
+                token = task.getResult();
+                Log.i("My token!!!", token);
+            }
+        });
+    }
+
+    private String getAccessToken() {
+        try {
+            InputStream stream = getAssets().open(CREDENTIALS_FILE_PATH);
+            GoogleCredentials credentials = GoogleCredentials.fromStream(stream)
+                    .createScoped(Collections.singletonList("https://www.googleapis.com/auth/firebase.messaging"));
+            credentials.refreshIfExpired();
+            return credentials.getAccessToken().getTokenValue();
+        } catch (Exception e) {
+            Log.e("FCM", "Failed to get access token", e);
+            return null;
         }
     }
 }

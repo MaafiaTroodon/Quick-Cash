@@ -40,6 +40,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11 // Java 11 compatibility
         targetCompatibility = JavaVersion.VERSION_11 // Java 11 compatibility
     }
+    packaging {
+        resources {
+            excludes.add("META-INF/DEPENDENCIES")
+        }
+    }
 }
 
 dependencies {
@@ -57,6 +62,9 @@ dependencies {
     implementation(libs.play.services.maps) // Google Maps
     implementation(libs.play.services.location) // Google Location Services
     implementation(libs.uiautomator)
+    implementation(libs.firebase.messaging)
+    implementation(libs.volley)
+    implementation("com.google.auth:google-auth-library-oauth2-http:1.14.0")
 
     // Unit testing dependencies
     testImplementation("junit:junit:4.13.2") // JUnit for unit tests
