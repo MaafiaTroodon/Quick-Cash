@@ -47,10 +47,11 @@ public class FCMNotificationService extends FirebaseMessagingService {
             }
         }
 
-        sendNotification(remoteMessage.getNotification().getBody());
+//        sendNotification(remoteMessage.getNotification().getBody());
     }
 
     private void sendNotification(String messageBody, JobModel jobModel) {
+        Log.i("Notification Sent!!", messageBody);
         Intent intent = new Intent(this, JobDetailsActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("job", jobModel);

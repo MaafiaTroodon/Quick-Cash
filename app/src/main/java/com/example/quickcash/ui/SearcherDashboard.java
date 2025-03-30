@@ -51,6 +51,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -82,15 +83,16 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
     private JobAdapter jobAdapter;
     private List<JobModel> jobList;
     public List<PreferEmployerModel> preferredJob;
+    public List<String> prefemployer;
     private List<JobModel> fullJobList; // Stores all jobs for restoring after search
     private String currentUserEmail;
     private DatabaseReference jobsRef;
     private ChildEventListener jobsListener;
     private DatabaseReference usersRef;
+    private ChildEventListener usersListener;
     private EditText searchInput;
     private Button searchButton;
     private Button filterButton;
-    private Button btn; //temp
     private TextView tvFilteredResults; // New TextView for showing applied filters
     private TextView locationText; // Added from US1-Location
     private Users users;
@@ -109,6 +111,7 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
 
         getFCMToken();
         jobsRef = FirebaseDatabase.getInstance().getReference("Jobs");
+        usersRef = FirebaseDatabase.getInstance().getReference("Users");
 
         jobsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -124,6 +127,35 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e("Firebase", "Failed to load initial keys", error.toException());
+            }
+        });
+
+        currentUserEmail = (String) getIntent().getSerializableExtra("currentUser");
+
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            String sanitizedEmail = currentUserEmail.replace(".", ",");
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    Log.d("User email!!", child.getKey());
+                    if(child.getKey().equals(sanitizedEmail)) {
+                        GenericTypeIndicator<List<PreferEmployerModel>> t = new GenericTypeIndicator<List<PreferEmployerModel>>() {};
+                        preferredJob = child.child("preferredJob").getValue(t);
+
+                        if (preferredJob != null) {
+                            Log.d("Firebase", "Preferred jobs retrieved: " + preferredJob.size());
+                            getPrefemployer();
+                        } else {
+                            Log.d("Firebase", "Preferred jobs is null");
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
 
@@ -150,7 +182,6 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
         tvFilteredResults = findViewById(R.id.tvFilteredResults);
         logoutButton = findViewById(R.id.LogOut);
         locationText = findViewById(R.id.locationText);
-        btn = findViewById(R.id.button); //temp
 
         // Initialize managers
         jobFilterManager = new JobFilterManager();
@@ -160,6 +191,7 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         jobList = new ArrayList<>();
         preferredJob = new ArrayList<>();
+        prefemployer = new ArrayList<>();
         fullJobList = new ArrayList<>();
         jobAdapter = new JobAdapter(jobList);
         recyclerView.setAdapter(jobAdapter);
@@ -171,8 +203,6 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
         auth = FirebaseAuth.getInstance();
 
         jobAdapter.setItemClickListener(this);
-
-        currentUserEmail = (String) getIntent().getSerializableExtra("currentUser");
 
         Firebase firebase = new Firebase();
         users = new Users(firebase);
@@ -200,6 +230,8 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
             finish();
         });
 
+
+
         preferredJobButton.setOnClickListener(v -> {
             PreferEmployerModel isTempIn = new PreferEmployerModel();
             if (preferredJob.size() >= 2 && preferredJob.contains(isTempIn)) {
@@ -219,52 +251,6 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
                     Toast.makeText(SearcherDashboard.this, error, Toast.LENGTH_LONG).show();
                 }
             });
-        });
-
-        btn.setOnClickListener(v -> {
-            new Thread(() -> {
-                String accessToken = getAccessToken();
-                if (accessToken == null) {
-                    Log.e("FCM", "Access token is null");
-                    return;
-                }
-
-                String deviceToken = token;
-
-                JSONObject jsonPayload = new JSONObject();
-                try {
-                    JSONObject messageObj = new JSONObject();
-                    messageObj.put("token", deviceToken);
-
-                    JSONObject notificationObj = new JSONObject();
-                    notificationObj.put("title", "Job Updated");
-                    notificationObj.put("body", "This is a test message");
-                    messageObj.put("notification", notificationObj);
-
-                    jsonPayload.put("message", messageObj);
-                } catch (Exception e) {
-                    Log.e("FCM", "JSON Exception", e);
-                    return;
-                }
-
-                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
-                        Request.Method.POST,
-                        PUSH_NOTIFICATION_ENDPOINT,
-                        jsonPayload,
-                        response -> Log.d("FCM", "Message sent successfully: " + response.toString()),
-                        error -> Log.e("FCM", "Error sending message", error)
-                ) {
-                    @Override
-                    public Map<String, String> getHeaders() {
-                        Map<String, String> headers = new HashMap<>();
-                        headers.put("Content-Type", "application/json; UTF-8");
-                        headers.put("Authorization", "Bearer " + accessToken);
-                        return headers;
-                    }
-                };
-
-                runOnUiThread(() -> requestQueue.add(jsonObjectRequest));
-            }).start();
         });
     }
 
@@ -539,7 +525,7 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
                 String employerEmail = snapshot.child("employerEmail").getValue(String.class);
                 JobModel jobModel = snapshot.getValue(JobModel.class);
 
-                if (!initialJobKeys.contains(key)) {
+                if (!initialJobKeys.contains(key) && prefemployer.contains(employerEmail)) {
                     Log.d("New Job!!", "Job updated (new): " + key);
                     initialJobKeys.add(key);
 
@@ -642,4 +628,15 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
             return null;
         }
     }
+
+    private void getPrefemployer() {
+        if (preferredJob != null) {
+            for (PreferEmployerModel job : preferredJob) {
+                if(!prefemployer.contains(job.getEmployerEmail())) {
+                    prefemployer.add(job.getEmployerEmail());
+                }
+            }
+        }
+    }
+
 }
