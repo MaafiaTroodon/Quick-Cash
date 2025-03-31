@@ -193,7 +193,7 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
         preferredJob = new ArrayList<>();
         prefemployer = new ArrayList<>();
         fullJobList = new ArrayList<>();
-        jobAdapter = new JobAdapter(jobList);
+        jobAdapter = new JobAdapter(jobList, currentUserEmail);
         recyclerView.setAdapter(jobAdapter);
 
         // Load jobs
@@ -252,6 +252,7 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
                 }
             });
         });
+        jobAdapter.setItemClickListener(this);
     }
 
     private void checkLocationPermissions() {
@@ -358,17 +359,17 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
     private void loadAllJobs() {
         jobDataManager.loadAllJobs(new JobDataManager.JobDataCallback() {
             @Override
-            public void onJobsLoaded(List<JobModel> jobs) {
+            public void onJobsLoaded(List<JobModel> jobs, List<String> jobIds) {  // Updated to include jobIds
                 jobList.clear();
                 fullJobList.clear();
                 jobList.addAll(jobs);
                 fullJobList.addAll(jobs);
-                jobAdapter.updateJobs(jobList);
+                jobAdapter.updateJobs(jobList, jobIds);  // Updated to include jobIds
             }
 
             @Override
             public void onError(String error) {
-                // Handle error
+                Toast.makeText(SearcherDashboard.this, "Error loading jobs: " + error, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -382,23 +383,42 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
                 filteredJobs.add(job);
             }
         }
-        jobAdapter.updateJobs(filteredJobs); // Update the adapter with filtered jobs
+        // Since we don't have IDs for filtered jobs, we'll need to find them
+        List<String> filteredJobIds = new ArrayList<>();
+        for (JobModel job : filteredJobs) {
+            int index = fullJobList.indexOf(job);
+            if (index >= 0 && index < jobAdapter.jobIds.size()) {
+                filteredJobIds.add(jobAdapter.jobIds.get(index));
+            }
+        }
+        jobAdapter.updateJobs(filteredJobs, filteredJobIds);
     }
 
     private void searchJobs() {
         String query = searchInput.getText().toString().trim();
         if (!query.isEmpty()) {
             List<JobModel> filteredJobs = jobFilterManager.filterJobs(fullJobList, query);
-            jobAdapter.updateJobs(filteredJobs);
+            // Get the corresponding job IDs for the filtered jobs
+            List<String> filteredJobIds = getJobIdsForJobs(filteredJobs);
+            jobAdapter.updateJobs(filteredJobs, filteredJobIds);
             clearSearchButton.setVisibility(View.VISIBLE);
         }
     }
-
-    private void restoreFullList() {
-        jobAdapter.updateJobs(fullJobList);
-        clearSearchButton.setVisibility(View.GONE);
+    private List<String> getJobIdsForJobs(List<JobModel> jobs) {
+        List<String> ids = new ArrayList<>();
+        for (JobModel job : jobs) {
+            int index = fullJobList.indexOf(job);
+            if (index >= 0 && index < jobAdapter.jobIds.size()) {
+                ids.add(jobAdapter.jobIds.get(index));
+            }
+        }
+        return ids;
     }
 
+    private void restoreFullList() {
+        jobAdapter.updateJobs(fullJobList, jobAdapter.jobIds);
+        clearSearchButton.setVisibility(View.GONE);
+    }
     private void openFilterPage() {
         Intent intent = new Intent(SearcherDashboard.this, FilterPage.class);
         startActivityForResult(intent, FILTER_REQUEST_CODE);
@@ -432,7 +452,14 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
 
             // Apply filters
             List<JobModel> filteredJobs = jobFilterManager.applyFilters(fullJobList, jobTitle, minSalary, maxSalary, company, location);
-            jobAdapter.updateJobs(filteredJobs);
+            List<String> filteredJobIds = new ArrayList<>();
+            for (JobModel job : filteredJobs) {
+                int index = fullJobList.indexOf(job);
+                if (index >= 0 && index < jobAdapter.jobIds.size()) {
+                    filteredJobIds.add(jobAdapter.jobIds.get(index));
+                }
+            }
+            jobAdapter.updateJobs(filteredJobs, filteredJobIds);
         }
     }
 
@@ -441,6 +468,7 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<JobModel> filteredJobs = new ArrayList<>();
+                List<String> filteredJobIds = new ArrayList<>();
 
                 for (DataSnapshot jobSnapshot : snapshot.getChildren()) {
                     JobModel job = jobSnapshot.getValue(JobModel.class);
@@ -476,10 +504,11 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
 
                     if (matches) {
                         filteredJobs.add(job);
+                        filteredJobIds.add(jobSnapshot.getKey());
                     }
                 }
 
-                jobAdapter.updateJobs(filteredJobs); // Update adapter with filtered jobs
+                jobAdapter.updateJobs(filteredJobs, filteredJobIds);
             }
 
             @Override
@@ -497,6 +526,33 @@ public class SearcherDashboard extends AppCompatActivity implements JobAdapter.B
         String addedTime = now.getYear() + "-" + now.getMonthValue() + "-" + now.getDayOfMonth() + "-" + now.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
         PreferEmployerModel preferEmployerModel = new PreferEmployerModel(selectedItem, addedTime);
         addToPreferredList(preferEmployerModel);
+    }
+
+    @Override
+    public void onApplyClick(View view, int position) {
+        String jobId = jobAdapter.getJobId(position);
+        if (jobId == null) {
+            Toast.makeText(this, "Error: Job ID not found", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        JobDataManager jobDataManager = new JobDataManager();
+        jobDataManager.applyForJob(jobId, currentUserEmail, new JobDataManager.ApplyCallback() {
+            @Override
+            public void onSuccess() {
+                Toast.makeText(SearcherDashboard.this,
+                        "Application submitted!", Toast.LENGTH_SHORT).show();
+                // Update the job locally
+                JobModel job = jobAdapter.getItem(position);
+                job.addApplicant(currentUserEmail);
+                jobAdapter.notifyItemChanged(position);
+            }
+
+            @Override
+            public void onError(String error) {
+                Toast.makeText(SearcherDashboard.this, error, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

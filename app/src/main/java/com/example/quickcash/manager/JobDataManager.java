@@ -1,4 +1,3 @@
-// JobDataManager.java
 package com.example.quickcash.manager;
 
 import androidx.annotation.NonNull;
@@ -25,13 +24,44 @@ public class JobDataManager {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<JobModel> jobList = new ArrayList<>();
+                List<String> jobIds = new ArrayList<>();
                 for (DataSnapshot jobSnapshot : snapshot.getChildren()) {
                     JobModel job = jobSnapshot.getValue(JobModel.class);
                     if (job != null) {
                         jobList.add(job);
+                        jobIds.add(jobSnapshot.getKey());
                     }
                 }
-                callback.onJobsLoaded(jobList);
+                callback.onJobsLoaded(jobList, jobIds);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                callback.onError(error.getMessage());
+            }
+        });
+    }
+
+    public void applyForJob(String jobId, String userEmail, ApplyCallback callback) {
+        DatabaseReference jobRef = jobsRef.child(jobId);
+        jobRef.child("applicants").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<String> applicants = new ArrayList<>();
+                if (snapshot.exists()) {
+                    for (DataSnapshot applicantSnapshot : snapshot.getChildren()) {
+                        applicants.add(applicantSnapshot.getValue(String.class));
+                    }
+                }
+
+                if (!applicants.contains(userEmail)) {
+                    applicants.add(userEmail);
+                    jobRef.child("applicants").setValue(applicants)
+                            .addOnSuccessListener(aVoid -> callback.onSuccess())
+                            .addOnFailureListener(e -> callback.onError(e.getMessage()));
+                } else {
+                    callback.onError("You've already applied to this job");
+                }
             }
 
             @Override
@@ -42,7 +72,12 @@ public class JobDataManager {
     }
 
     public interface JobDataCallback {
-        void onJobsLoaded(List<JobModel> jobList);
+        void onJobsLoaded(List<JobModel> jobList, List<String> jobIds);
+        void onError(String error);
+    }
+
+    public interface ApplyCallback {
+        void onSuccess();
         void onError(String error);
     }
 }

@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
 
         android:allowBackup="true"
@@ -54,7 +56,7 @@
         <activity android:name=".ui.CreatorPreferredList"
             android:exported="true" />
 
-<<<<<<< app/src/main/AndroidManifest.xml
+
         <activity android:name=".ui.JobDetailsActivity"
             android:exported="true" />
         <activity android:name=".ui.Paypal"
@@ -64,7 +66,7 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
->>>>>>> app/src/main/AndroidManifest.xml
+
     </application>
 
 </manifest>
