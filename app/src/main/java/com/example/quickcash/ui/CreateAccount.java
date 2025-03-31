@@ -1,21 +1,32 @@
 // CreateAccountActivity.java
 package com.example.quickcash.ui;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import com.example.quickcash.R;
 import com.example.quickcash.core.AccountManager;
 import com.example.quickcash.model.SecurityModel;
 import com.example.quickcash.services.AccountService;
 import com.example.quickcash.services.FirebaseAccountService;
 import com.example.quickcash.validator.AccountValidator;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class CreateAccount extends AppCompatActivity {
 
@@ -26,10 +37,23 @@ public class CreateAccount extends AppCompatActivity {
     private AccountManager accountManager;
     private AccountValidator validator;
 
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    // FCM SDK (and your app) can post notifications.
+//                    FirebaseMessaging.getInstance().subscribeToTopic("general_notifications");
+                    Log.d("NotificationPermission", "Permission granted, notifications can be sent.");
+                } else {
+                    Toast.makeText(this, "You won't receive notifications unless you grant notification permission.", Toast.LENGTH_LONG).show();
+                }
+            });
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account);
+
+        askNotificationPermission();
 
         // Initialize UI Elements
         userName = findViewById(R.id.userName);
@@ -94,5 +118,29 @@ public class CreateAccount extends AppCompatActivity {
         Intent intent = new Intent(CreateAccount.this, LoginActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    private void askNotificationPermission() {
+        // This is only necessary for API level >= 33 (TIRAMISU)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
+                    PackageManager.PERMISSION_GRANTED) {
+                // FCM SDK (and your app) can post notifications.
+            } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+                new AlertDialog.Builder(this)
+                        .setTitle("Notification Permission Needed")
+                        .setMessage("Granting permission will allow us to send you important updates and notifications. Do you want to enable notifications?")
+                        .setPositiveButton("OK", (dialog, which) -> {
+                            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+                        })
+                        .setNegativeButton("No thanks", (dialog, which) -> {
+                            Toast.makeText(this, "You will not receive notifications.", Toast.LENGTH_LONG).show();
+                        })
+                        .show();
+            } else {
+                // Directly ask for the permission
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            }
+        }
     }
 }

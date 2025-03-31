@@ -3,6 +3,8 @@ package com.example.quickcash.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.Gson;
+
 public class JobModel implements Parcelable {
     private String title, description, location, type, salaryText, company, employerEmail;
 
@@ -64,4 +66,7 @@ public class JobModel implements Parcelable {
     public String getSalaryText() { return salaryText; }
     public String getCompany() { return company; }
     public String getEmployerEmail() { return employerEmail; }
+    public String toJson() {
+        return new Gson().toJson(this);
+    }
 }
