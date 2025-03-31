@@ -62,14 +62,18 @@ dependencies {
     implementation(libs.play.services.maps) // Google Maps
     implementation(libs.play.services.location) // Google Location Services
     implementation(libs.uiautomator)
+<<<<<<< app/build.gradle.kts
+    implementation("com.paypal.sdk:paypal-android-sdk:2.16.0")
     implementation(libs.firebase.messaging)
     implementation(libs.volley)
     implementation("com.google.auth:google-auth-library-oauth2-http:1.14.0")
+>>>>>>> app/build.gradle.kts
 
     // Unit testing dependencies
     testImplementation("junit:junit:4.13.2") // JUnit for unit tests
     testImplementation("org.mockito:mockito-core:4.0.0") // Mockito for mocking in unit tests
     testImplementation("org.mockito:mockito-inline:4.0.0") // Mockito inline for mocking final classes
+    testImplementation("org.robolectric:robolectric:4.10")
 
     // AndroidTest dependencies (instrumentation tests)
     androidTestImplementation("androidx.test.ext:junit:1.1.3") // AndroidX JUnit for instrumentation tests
