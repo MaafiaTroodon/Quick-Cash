@@ -86,6 +86,9 @@ public class JobModel implements Parcelable {
             applicants.add(email);
         }
     }
+    public boolean isAppliable(String userEmail) {
+        return applicants.contains(userEmail);
+    }
 
     public String toJson() {
         return new Gson().toJson(this);

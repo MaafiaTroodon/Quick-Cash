@@ -23,6 +23,13 @@ public class JobModelTest {
         assertEquals(jobModel.getCompany(), company);
         assertEquals(jobModel.getEmployerEmail(), employerEmail);
     }
+    @Test
+    public void checkIfModelIsAppliable() {
+        jobModel = new JobModel(title, description, location, type, salaryText, company, employerEmail);
+        String testEmail = "test12345@gmail.com";
+        jobModel.addApplicant(testEmail);
+        assertTrue(jobModel.isAppliable(testEmail));
+    }
 
 
 
