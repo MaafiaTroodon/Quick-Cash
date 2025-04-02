@@ -46,6 +46,14 @@ public class CreateJobPage extends AppCompatActivity {
         jobs = new Jobs(new Firebase());
         validator = new JobValidator();
 
+        Button backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> {
+            Intent intent = new Intent(CreateJobPage.this, CreatorDashboard.class);
+            startActivity(intent);
+            finish();
+        });
+
+
         submitButton.setOnClickListener(v -> submitJob());
     }
 

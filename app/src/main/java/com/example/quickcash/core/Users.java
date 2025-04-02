@@ -236,6 +236,47 @@ public class Users {
     }
 
 
+    public void getApplicantsForMyJobs(Firebase firebase, ApplicantsCallback callback) {
+        FirebaseUser currentUser = auth.getCurrentUser();
+
+        if (currentUser == null) {
+            callback.onError("User not logged in.");
+            return;
+        }
+
+        String currentUserEmail = currentUser.getEmail();
+        DatabaseReference jobsRef = firebase.getDb().getReference("Jobs");
+
+        jobsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<String> allApplicants = new java.util.ArrayList<>();
+
+                for (DataSnapshot jobSnapshot : snapshot.getChildren()) {
+                    String employerEmail = jobSnapshot.child("employerEmail").getValue(String.class);
+
+                    if (employerEmail != null && employerEmail.equals(currentUserEmail)) {
+                        DataSnapshot applicantsSnapshot = jobSnapshot.child("applicants");
+
+                        for (DataSnapshot applicant : applicantsSnapshot.getChildren()) {
+                            String applicantEmail = applicant.getValue(String.class);
+                            if (applicantEmail != null && !allApplicants.contains(applicantEmail)) {
+                                allApplicants.add(applicantEmail);
+                            }
+                        }
+                    }
+                }
+
+                callback.onSuccess(allApplicants);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                callback.onError("Database error: " + error.getMessage());
+            }
+        });
+    }
+
 
 
 
@@ -256,8 +297,8 @@ public class Users {
         void onError(String error);
     }
 
-    public interface UsernameCallback {
-        void onResult(boolean exists);
+    public interface ApplicantsCallback {
+        void onSuccess(List<String> applicantEmails);
         void onError(String error);
     }
 
