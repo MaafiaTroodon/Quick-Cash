@@ -47,6 +47,20 @@
         android:textSize="16sp"
         android:paddingTop="8dp"/>
 
+    <TextView
+        android:id="@+id/employerName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Employer Name"
+        android:textSize="18sp"/>
+
+    <TextView
+        android:id="@+id/employerPhone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Employer Phone"
+        android:textSize="18sp" />
+
     <Button
         android:id="@+id/backButton"
         android:layout_width="wrap_content"
