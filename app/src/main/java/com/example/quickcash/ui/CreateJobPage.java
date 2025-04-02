@@ -1,5 +1,6 @@
 package com.example.quickcash.ui;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
@@ -19,12 +20,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class CreateJobPage extends AppCompatActivity {
 
-    private EditText jobTitle, jobDescription, jobLocation, salary, companyName;
+    private EditText jobTitle, jobDescription, jobLocation, salary, companyName, employerPhone, employerName;
     private Spinner jobType;
     private Button submitButton;
     private Jobs jobs;
     private JobValidator validator;
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +38,9 @@ public class CreateJobPage extends AppCompatActivity {
         salary = findViewById(R.id.salary);
         jobLocation = findViewById(R.id.jobLocation);
         companyName = findViewById(R.id.companyName);
+        employerPhone = findViewById(R.id.employerPhone);
+        employerName = findViewById(R.id.employerName);
+
         submitButton = findViewById(R.id.submitButton);
 
         jobs = new Jobs(new Firebase());
@@ -59,6 +64,9 @@ public class CreateJobPage extends AppCompatActivity {
         String type = jobType.getSelectedItem().toString();
         String salaryText = salary.getText().toString().trim();
         String company = companyName.getText().toString().trim();
+        String employerPhoneText = employerPhone.getText().toString().trim(); // Get employer phone
+        String employerNameText = employerName.getText().toString().trim(); // Get employer name
+
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
@@ -97,9 +105,20 @@ public class CreateJobPage extends AppCompatActivity {
             companyName.requestFocus();
             return;
         }
+        if (!validator.isValidEmployerPhone(employerPhoneText)) {
+            employerPhone.setError("Invalid phone number format");
+            employerPhone.requestFocus();
+            return;
+        }
+        if (!validator.isValidEmployerName(employerNameText)) {
+            employerName.setError("Employer name is required");
+            employerName.requestFocus();
+            return;
+        }
+
 
         // Create Job and Navigate on Success
-        JobModel jobModel = new JobModel(title, description, location, type, salaryText, company, userEmail);
+        JobModel jobModel = new JobModel(title, description, location, type, salaryText, company, userEmail, employerPhoneText, employerNameText);
 
         jobs.createJob(jobModel, new Jobs.JobCallback() {
             @Override

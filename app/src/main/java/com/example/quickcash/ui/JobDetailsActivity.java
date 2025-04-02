@@ -12,7 +12,7 @@ import com.example.quickcash.model.JobModel;
 
 public class JobDetailsActivity extends AppCompatActivity {
 
-    private TextView jobTitle, jobCompany, jobLocation, jobType, jobSalary, jobDescription;
+    private TextView jobTitle, jobCompany, jobLocation, jobType, jobSalary, jobDescription, employerName, employerPhone;
     private Button backButton;
 
     @SuppressLint("MissingInflatedId")
@@ -27,6 +27,10 @@ public class JobDetailsActivity extends AppCompatActivity {
         jobType = findViewById(R.id.jobType);
         jobSalary = findViewById(R.id.jobSalary);
         jobDescription = findViewById(R.id.jobDescription);
+        employerName = findViewById(R.id.employerName);
+        employerPhone = findViewById(R.id.employerPhone);
+        backButton = findViewById(R.id.backButton);
+
         backButton = findViewById(R.id.backButton);
 
         // Back button logic
@@ -48,6 +52,8 @@ public class JobDetailsActivity extends AppCompatActivity {
                 jobType.setText(job.getType());
                 jobSalary.setText("$" + job.getSalaryText());
                 jobDescription.setText(job.getDescription());
+                employerName.setText(job.getEmployerName());
+                employerPhone.setText(job.getEmployerPhone());
             } else {
                 jobTitle.setText("Error: Job Not Found");
             }

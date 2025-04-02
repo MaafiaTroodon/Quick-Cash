@@ -10,6 +10,9 @@ import java.util.List;
 
 public class JobModel implements Parcelable {
     private String title, description, location, type, salaryText, company, employerEmail;
+    private String employerPhone;
+    private String employerName;
+
     private List<String> applicants;
 
     public JobModel() {
@@ -17,7 +20,7 @@ public class JobModel implements Parcelable {
     }
 
     public JobModel(String title, String description, String location, String type,
-                    String salaryText, String company, String employerEmail) {
+                    String salaryText, String company, String employerEmail,  String employerPhone, String employerName) {
         this.title = title;
         this.description = description;
         this.location = location;
@@ -25,6 +28,8 @@ public class JobModel implements Parcelable {
         this.salaryText = salaryText;
         this.company = company;
         this.employerEmail = employerEmail;
+        this.employerPhone = employerPhone;
+        this.employerName = employerName;
         this.applicants = new ArrayList<>();
     }
 
@@ -36,6 +41,8 @@ public class JobModel implements Parcelable {
         salaryText = in.readString();
         company = in.readString();
         employerEmail = in.readString();
+        employerPhone = in.readString();
+        employerName = in.readString();
         applicants = in.createStringArrayList();
     }
 
@@ -48,6 +55,8 @@ public class JobModel implements Parcelable {
         dest.writeString(salaryText);
         dest.writeString(company);
         dest.writeString(employerEmail);
+        dest.writeString(employerPhone);
+        dest.writeString(employerName);
         dest.writeStringList(applicants);
     }
 
@@ -75,6 +84,9 @@ public class JobModel implements Parcelable {
     public String getSalaryText() { return salaryText; }
     public String getCompany() { return company; }
     public String getEmployerEmail() { return employerEmail; }
+    public String getEmployerPhone() { return employerPhone; }
+    public String getEmployerName() { return employerName; }
+
     public List<String> getApplicants() { return applicants; }
     public void setApplicants(List<String> applicants) { this.applicants = applicants; }
 
