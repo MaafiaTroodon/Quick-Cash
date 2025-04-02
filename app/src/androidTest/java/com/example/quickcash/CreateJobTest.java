@@ -62,8 +62,9 @@ public class CreateJobTest {
         onView(withId(R.id.jobDescription)).perform(typeText("Come work for us we are hiring!"), closeSoftKeyboard());
         onView(withId(R.id.jobLocation)).perform(typeText("Halifax, NS"), closeSoftKeyboard());
         onView(withId(R.id.companyName)).perform(typeText("Software inc"), closeSoftKeyboard());
-
         onView(withId(R.id.jobType)).perform(click());
+        onView(withId(R.id.employerPhone)).perform(typeText("+1234567890"), closeSoftKeyboard());
+        onView(withId(R.id.employerName)).perform(typeText("John Doe"), closeSoftKeyboard());
         onData(allOf(is(instanceOf(String.class)), is("Select Job Type"))).perform(click());
 
         onView(withId(R.id.salary)).perform(typeText("24.60"), closeSoftKeyboard());
@@ -95,6 +96,8 @@ public class CreateJobTest {
         onView(withId(R.id.jobLocation)).perform(typeText("Halifax, NS"), closeSoftKeyboard());
         onView(withId(R.id.companyName)).perform(typeText("Software inc"), closeSoftKeyboard());
         onView(withId(R.id.jobType)).perform(click());
+        onView(withId(R.id.employerPhone)).perform(typeText("+1234567890"), closeSoftKeyboard());
+        onView(withId(R.id.employerName)).perform(typeText("John Doe"), closeSoftKeyboard());
         onData(allOf(is(instanceOf(String.class)), is("Full-Time"))).perform(click());
         onView(withId(R.id.salary)).perform(typeText("24.60"), closeSoftKeyboard());
         onView(withId(R.id.submitButton)).perform(click());

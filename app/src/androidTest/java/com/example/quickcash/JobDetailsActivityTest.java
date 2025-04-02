@@ -26,7 +26,7 @@ public class JobDetailsActivityTest {
 
     @Test
     public void testJobDetailsDisplayedCorrectly() {
-        JobModel job = new JobModel("Title", "Description", "Location", "Type", "1000", "Company", "email@example.com");
+        JobModel job = new JobModel("Title", "Description", "Location", "Type", "1000", "Company", "email@example.com", "+1234567890", "John Doe");
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), JobDetailsActivity.class);
         intent.putExtra("job", job);
         activityRule.launchActivity(intent);
@@ -39,6 +39,9 @@ public class JobDetailsActivityTest {
         TextView jobType = activity.findViewById(R.id.jobType);
         TextView jobSalary = activity.findViewById(R.id.jobSalary);
         TextView jobDescription = activity.findViewById(R.id.jobDescription);
+        activity.findViewById(R.id.jobDescription);
+        TextView employerName = activity.findViewById(R.id.employerName);
+        TextView employerPhone = activity.findViewById(R.id.employerPhone);
 
         assertEquals("Title", jobTitle.getText().toString());
         assertEquals("Company", jobCompany.getText().toString());
@@ -46,6 +49,8 @@ public class JobDetailsActivityTest {
         assertEquals("Type", jobType.getText().toString());
         assertEquals("$1000", jobSalary.getText().toString());
         assertEquals("Description", jobDescription.getText().toString());
+        assertEquals("John Doe", employerName.getText().toString());
+        assertEquals("+1234567890", employerPhone.getText().toString());
     }
 
     @Test
@@ -75,7 +80,7 @@ public class JobDetailsActivityTest {
 
     @Test
     public void testPartialJobDataHandling() {
-        JobModel job = new JobModel("Title", null, "Location", null, "1000", "Company", null);
+        JobModel job = new JobModel("Title", null, "Location", null, "1000", "Company", null, "+1234567890", "John Doe" );
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), JobDetailsActivity.class);
         intent.putExtra("job", job);
         activityRule.launchActivity(intent);
@@ -88,6 +93,9 @@ public class JobDetailsActivityTest {
         TextView jobType = activity.findViewById(R.id.jobType);
         TextView jobSalary = activity.findViewById(R.id.jobSalary);
         TextView jobDescription = activity.findViewById(R.id.jobDescription);
+        TextView employerName = activity.findViewById(R.id.employerName);
+        TextView employerPhone = activity.findViewById(R.id.employerPhone);
+
 
         assertEquals("Title", jobTitle.getText().toString());
         assertEquals("Company", jobCompany.getText().toString());
@@ -95,11 +103,13 @@ public class JobDetailsActivityTest {
         assertEquals("", jobType.getText().toString()); // Expect empty string for null type
         assertEquals("$1000", jobSalary.getText().toString());
         assertEquals("", jobDescription.getText().toString()); // Expect empty string for null description
+        assertEquals("John Doe", employerName.getText().toString());
+        assertEquals("+1234567890", employerPhone.getText().toString());
     }
 
     @Test
     public void testBackButtonFunctionality() {
-        JobModel job = new JobModel("Title", "Description", "Location", "Type", "1000", "Company", "email@example.com");
+        JobModel job = new JobModel("Title", "Description", "Location", "Type", "1000", "Company", "email@example.com" , "+1234567890", "John Doe");
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), JobDetailsActivity.class);
         intent.putExtra("job", job);
         activityRule.launchActivity(intent);
