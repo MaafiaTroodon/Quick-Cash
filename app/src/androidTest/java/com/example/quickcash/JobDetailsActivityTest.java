@@ -15,6 +15,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
+import com.google.firebase.database.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 @RunWith(AndroidJUnit4.class)
 public class JobDetailsActivityTest {
@@ -116,5 +119,36 @@ public class JobDetailsActivityTest {
         assertTrue(activity.isFinishing());
 
 
+    }
+    @Test
+    public void testUserIsListedInApplicantsOnJob() throws InterruptedException {
+        String jobID = "-0K95WDOn_RYRDfSXHP6";
+        String testEmail = "test12345@gmail.com";
+
+        DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("Jobs").child(jobID).child("applicants");
+
+        CountDownLatch latch = new CountDownLatch(1);
+
+        dbref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                boolean found = false;
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    String email = child.getValue(String.class);
+                    if (testEmail.equals(email)) {
+                        found = true;
+                        break;
+                    }
+                }
+                assertTrue("User shouldve been listed", found);
+                latch.countDown();
+            }
+            @Override
+            public void onCancelled(DatabaseError e) {
+                fail("Firebase read cancelled: " + e.getMessage());
+                latch.countDown();
+            }
+        });
+        latch.await(5, TimeUnit.SECONDS);
     }
 }
