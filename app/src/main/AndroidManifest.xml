@@ -59,6 +59,8 @@
             android:exported="true" />
         <activity android:name=".ui.Paypal"
             android:exported="true" />
+        <activity android:name=".ui.EmployeeListPage"
+            android:exported="true" />
         <service android:name=".services.FCMNotificationService" android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>

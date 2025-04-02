@@ -41,6 +41,7 @@ public class Paypal extends AppCompatActivity {
     private static final String TAG = Paypal.class.getName();
 
     public PayPalConfiguration payPalConfiguration;
+    private Button backToListButton;
 
 
     private static final String PAYPAL_CLIENT_ID = "AYE-cXrpkIxybHaz2OJba69SZ55vSIS_vDnNI7J00CMT-Bgqyt0UHtvDtXTXX04R6puPP1m5rg_k7NVK";
@@ -62,6 +63,7 @@ public class Paypal extends AppCompatActivity {
         editText = findViewById(R.id.editTextNumber);
         button = findViewById(R.id.payButton);
         textView = findViewById(R.id.passOrFail);
+        backToListButton = findViewById(R.id.backToListButton);
     }
 
     public String getAmount() {
@@ -73,13 +75,15 @@ public class Paypal extends AppCompatActivity {
     }
 
     private void setListeners(){
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                processPayment();
-            }
+        button.setOnClickListener(v -> processPayment());
+
+        backToListButton.setOnClickListener(v -> {
+            Intent intent = new Intent(Paypal.this, EmployeeListPage.class);
+            startActivity(intent);
+            finish();
         });
     }
+
 
     public void initActivityLauncher(){
         activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result ->{

@@ -36,6 +36,8 @@ public class CreatorDashboard extends AppCompatActivity {
 
     private LocationManager locationManager;
     private LocationListener locationListener;
+    private Button viewEmployeesButton;
+
 
     private static final int REQUEST_LOCATION_PERMISSION = 1;
 
@@ -73,6 +75,13 @@ public class CreatorDashboard extends AppCompatActivity {
             Intent intent = new Intent(CreatorDashboard.this, CreatorPreferredList.class);
             startActivity(intent);
         });
+
+        viewEmployeesButton = findViewById(R.id.viewEmployeesButton);
+        viewEmployeesButton.setOnClickListener(v -> {
+            Intent intent = new Intent(CreatorDashboard.this, EmployeeListPage.class);
+            startActivity(intent);
+        });
+
 
         // Logout button functionality
         logoutButton.setOnClickListener(v -> {
