@@ -62,12 +62,10 @@ dependencies {
     implementation(libs.play.services.maps) // Google Maps
     implementation(libs.play.services.location) // Google Location Services
     implementation(libs.uiautomator)
-
     implementation("com.paypal.sdk:paypal-android-sdk:2.16.0")
     implementation(libs.firebase.messaging)
     implementation(libs.volley)
     implementation("com.google.auth:google-auth-library-oauth2-http:1.14.0")
-
 
     // Unit testing dependencies
     testImplementation("junit:junit:4.13.2") // JUnit for unit tests
