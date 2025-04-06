@@ -39,6 +39,9 @@ public class CreatorEmployeeList extends AppCompatActivity implements EmployeeAd
     private List<UserModel> employeeList;
     public String currentUserEmail;
 
+    private static final String TAG_FIREBASE = "FirebaseData";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,7 +78,7 @@ public class CreatorEmployeeList extends AppCompatActivity implements EmployeeAd
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 employeeList.clear();
-                Log.d("FirebaseData", "Snapshot: " + snapshot.toString()); // Log the entire snapshot
+                Log.d(TAG_FIREBASE, "Snapshot: " + snapshot.toString()); // Log the entire snapshot
 
                 for (DataSnapshot userSnapshot : snapshot.getChildren()) {
                     String keyEmail = userSnapshot.getKey();
@@ -85,11 +88,11 @@ public class CreatorEmployeeList extends AppCompatActivity implements EmployeeAd
 
                         if (user != null) {
                             user.setEmail(userEmail); // Set correct email
-                            Log.d("FirebaseData", "User: " + user.getUsername() + ", Role: " + user.getRole()); // Log each user
+                            Log.d(TAG_FIREBASE, "User: " + user.getUsername() + ", Role: " + user.getRole()); // Log each user
 
                             if ("Searcher".equals(user.getRole())) {
                                 employeeList.add(user);
-                                Log.d("FirebaseData", "Added Searcher: " + user.getUsername()); // Log added searchers
+                                Log.d(TAG_FIREBASE, "Added Searcher: " + user.getUsername()); // Log added searchers
                             }
                         }
                     }
