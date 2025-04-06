@@ -41,6 +41,9 @@ public class CreatorEmployeeList extends AppCompatActivity implements EmployeeAd
 
     private static final String TAG_FIREBASE = "FirebaseData";
 
+    private static final String TAG_PREFERRED = "PreferredEmployees";
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,7 +132,7 @@ public class CreatorEmployeeList extends AppCompatActivity implements EmployeeAd
                     for (DataSnapshot employeeSnapshot : snapshot.getChildren()) {
                         PreferEmployeeModel employee = employeeSnapshot.getValue(PreferEmployeeModel.class);
                         preferredEmployees.add(employee);
-                        Log.d("PreferredEmployees", "Existing Preferred Employee: " + employee.getEmployeeName());
+                        Log.d(TAG_PREFERRED, "Existing Preferred Employee: " + employee.getEmployeeName());
                     }
                 }
 
@@ -144,15 +147,15 @@ public class CreatorEmployeeList extends AppCompatActivity implements EmployeeAd
                     usersRef.child(sanitizedEmail).child("preferredEmployees").setValue(preferredEmployees)
                             .addOnCompleteListener(task -> {
                                 if (task.isSuccessful()) {
-                                    Log.d("PreferredEmployees", "Added to preferred employees: " + newPreferredEmployee.getEmployeeName());
+                                    Log.d(TAG_PREFERRED, "Added to preferred employees: " + newPreferredEmployee.getEmployeeName());
                                     Toast.makeText(CreatorEmployeeList.this, "Added to preferred employees", Toast.LENGTH_SHORT).show();
                                 } else {
-                                    Log.e("PreferredEmployees", "Failed to add to preferred employees");
+                                    Log.e(TAG_PREFERRED, "Failed to add to preferred employees");
                                     Toast.makeText(CreatorEmployeeList.this, "Failed to add to preferred employees", Toast.LENGTH_LONG).show();
                                 }
                             });
                 } else {
-                    Log.d("PreferredEmployees", "Employee already in preferred list: " + newPreferredEmployee.getEmployeeName());
+                    Log.d(TAG_PREFERRED, "Employee already in preferred list: " + newPreferredEmployee.getEmployeeName());
                     Toast.makeText(CreatorEmployeeList.this, "Employee already in preferred list", Toast.LENGTH_SHORT).show();
                 }
             }
