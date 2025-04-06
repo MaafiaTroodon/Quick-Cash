@@ -38,7 +38,6 @@ public class Paypal extends AppCompatActivity {
 
     public TextView textView;
 
-    private static final String TAG = Paypal.class.getName();
 
     public PayPalConfiguration payPalConfiguration;
     private Button backToListButton;
