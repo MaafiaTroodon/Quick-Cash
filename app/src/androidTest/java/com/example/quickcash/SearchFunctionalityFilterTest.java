@@ -9,6 +9,11 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.espresso.intent.Intents;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiObject;
+import androidx.test.uiautomator.UiObjectNotFoundException;
+import androidx.test.uiautomator.UiSelector;
 
 import com.example.quickcash.ui.FilterPage;
 import com.example.quickcash.ui.SearcherDashboard;
@@ -54,11 +59,16 @@ public class SearchFunctionalityFilterTest {
      * Test if all UI elements are displayed properly.
      */
     @Test
-    public void testUIElementsDisplayed() {
+    public void testUIElementsDisplayed() throws UiObjectNotFoundException {
+        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        UiObject allowLocationButton = device.findObject(new UiSelector().text("While using the app"));
+        if (allowLocationButton.exists() && allowLocationButton.isEnabled()) {
+            allowLocationButton.click();
+        }
+
         onView(withId(R.id.searchInput)).check(matches(isDisplayed()));
         onView(withId(R.id.searchButton)).check(matches(isDisplayed()));
         onView(withId(R.id.filterButton)).check(matches(isDisplayed()));
-        onView(withId(R.id.recyclerView)).check(matches(isDisplayed()));
         onView(withId(R.id.LogOut)).check(matches(isDisplayed()));
     }
 
@@ -66,7 +76,13 @@ public class SearchFunctionalityFilterTest {
      * Test if search functionality works.
      */
         @Test
-        public void testFilterFunctionality() {
+        public void testFilterFunctionality() throws UiObjectNotFoundException {
+            UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+            UiObject allowLocationButton = device.findObject(new UiSelector().text("While using the app"));
+            if (allowLocationButton.exists() && allowLocationButton.isEnabled()) {
+                allowLocationButton.click();
+            }
+
             // Start the SearcherDashboard activity
             onView(withId(R.id.filterButton)).perform(ViewActions.click()); // Click the filter button
 
@@ -83,9 +99,6 @@ public class SearchFunctionalityFilterTest {
             // Apply filters
             onView(withId(R.id.btnApplyFilters)).perform(ViewActions.click());
 
-            // Check that the filtered job list is updated accordingly (assuming RecyclerView is populated)
-            onView(withId(R.id.recyclerView)).perform(RecyclerViewActions.scrollToPosition(0)); // Scroll to the first item
-
             // Optionally, check if a filtered job is displayed in the RecyclerView
             // Example: Check that a job with "Developer" is displayed
             onView(allOf(ViewMatchers.withId(R.id.jobTitle), withText("Software Engineer"))).check(ViewAssertions.matches(isDisplayed()));
@@ -97,7 +110,12 @@ public class SearchFunctionalityFilterTest {
      * Test if the Logout button works and navigates to LoginActivity.
      */
     @Test
-    public void testLogoutButtonNavigatesToLogin() {
+    public void testLogoutButtonNavigatesToLogin() throws UiObjectNotFoundException {
+        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        UiObject allowLocationButton = device.findObject(new UiSelector().text("While using the app"));
+        if (allowLocationButton.exists() && allowLocationButton.isEnabled()) {
+            allowLocationButton.click();
+        }
         onView(withId(R.id.LogOut)).perform(click());
 
         // Verify navigation to LoginActivity

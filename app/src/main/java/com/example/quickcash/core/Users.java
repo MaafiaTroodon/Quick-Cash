@@ -3,6 +3,7 @@ package com.example.quickcash.core;
 import androidx.annotation.NonNull;
 
 import com.example.quickcash.database.Firebase;
+import com.example.quickcash.model.PreferEmployeeModel;
 import com.example.quickcash.model.PreferEmployerModel;
 import com.example.quickcash.model.SecurityModel;
 import com.example.quickcash.model.UserModel;
@@ -19,6 +20,18 @@ import java.util.Objects;
 public class Users {
     private final DatabaseReference usersRef;
     private final FirebaseAuth auth;
+
+    // 🔹 Define constants for frequently used messages
+    private static final String DATABASE_ERROR_MSG = "Database error: ";
+    private static final String EMAIL_NOT_FOUND_MSG = "Email not found.";
+    private static final String PASSWORD_MISMATCH_MSG = "Passwords do not match.";
+    private static final String SECURITY_ANSWERS_MISMATCH_MSG = "Security answers do not match.";
+    private static final String USER_ADDED_MSG = "User added successfully!";
+    private static final String ROLE_NOT_FOUND_MSG = "Role not found.";
+    private static final String LOGIN_FAILED_MSG = "Login failed: ";
+    private static final String PREFERRED_JOB_UPDATED_MSG = "Preferred job updated successfully.";
+    private static final String PREFERRED_JOB_FAILED_MSG = "Failed to update preferred job: ";
+
 
     public Users(Firebase firebase) {
         this.auth = FirebaseAuth.getInstance();
@@ -42,7 +55,7 @@ public class Users {
                     usersRef.child(sanitizedEmail).setValue(newUser)
                             .addOnCompleteListener(item -> {
                                 if (item.isSuccessful()) {
-                                    callback.onSuccess("User added successfully!");
+                                    callback.onSuccess(USER_ADDED_MSG);
                                 } else {
                                     callback.onError(Objects.requireNonNull(item.getException()).getMessage());
                                 }
@@ -65,7 +78,7 @@ public class Users {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.exists()) {
-                    callback.onError("Email not found.");
+                    callback.onError(EMAIL_NOT_FOUND_MSG);
                     return;
                 }
 
@@ -84,13 +97,13 @@ public class Users {
                 );
 
                 if (!isMatch) {
-                    callback.onError("Security answers do not match.");
+                    callback.onError(SECURITY_ANSWERS_MISMATCH_MSG);
                     return;
                 }
 
                 // Check if passwords match
                 if (!newPassword.equals(confirmPassword)) {
-                    callback.onError("Passwords do not match.");
+                    callback.onError(PASSWORD_MISMATCH_MSG);
                     return;
                 }
 
@@ -110,10 +123,13 @@ public class Users {
                         });
             }
 
+            private static final String DATABASE_ERROR_MSG = "Database error: ";
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                callback.onError("Database error: " + databaseError.getMessage());
+                callback.onError(DATABASE_ERROR_MSG + databaseError.getMessage());
             }
+
         });
     }
 
@@ -152,7 +168,7 @@ public class Users {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
-                    callback.onError("Email not found.");
+                    callback.onError(EMAIL_NOT_FOUND_MSG);
                     return;
                 }
 
@@ -163,10 +179,10 @@ public class Users {
                             .addOnCompleteListener(task -> {
                                 if (task.isSuccessful()) {
                                     System.out.println("preferred job successfully updated in Firebase.");
-                                    callback.onSuccess("preferred job updated successfully.");
+                                    callback.onSuccess(PREFERRED_JOB_UPDATED_MSG);
                                 } else {
-                                    System.out.println("Failed to update preferred job: " + task.getException());
-                                    callback.onError("Failed to preferred job: " + task.getException());
+                                    System.out.println(PREFERRED_JOB_FAILED_MSG + task.getException());
+                                    callback.onError(PREFERRED_JOB_FAILED_MSG + task.getException());
                                 }
                             });
                 }
@@ -175,10 +191,50 @@ public class Users {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                callback.onError("Database error: " + error.getMessage());
+                callback.onError(DATABASE_ERROR_MSG + error.getMessage());
             }
         });
     }
+
+    public void loadPreferredList(String email, LoadPreferredListCallback callback) {
+        // Replace "." with "," to match your Firebase keys
+        String sanitizedEmail = email.replace(".", ",");
+
+        // Point to the "preferred_list" node for this user
+        DatabaseReference preferredListRef = usersRef.child(sanitizedEmail).child("preferredEmployees");
+
+        // Read data once (no real-time updates needed for a simple load)
+        preferredListRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // If the node doesn't exist or is empty, return an empty list
+                if (!dataSnapshot.exists()) {
+                    callback.onSuccess(java.util.Collections.emptyList());
+                    return;
+                }
+
+                // Prepare a list to hold all preferred items
+                List<PreferEmployeeModel> preferredList = new java.util.ArrayList<>();
+
+                // Each child should map to a PreferEmployerModel
+                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                    PreferEmployeeModel item = childSnapshot.getValue(PreferEmployeeModel.class);
+                    if (item != null) {
+                        preferredList.add(item);
+                    }
+                }
+
+                // Return the full list via callback
+                callback.onSuccess(preferredList);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                callback.onError("Database error: " + databaseError.getMessage());
+            }
+        });
+    }
+
 
 
 
@@ -202,6 +258,11 @@ public class Users {
 
     public interface UsernameCallback {
         void onResult(boolean exists);
+        void onError(String error);
+    }
+
+    public interface LoadPreferredListCallback {
+        void onSuccess(List<PreferEmployeeModel> preferredList);
         void onError(String error);
     }
 

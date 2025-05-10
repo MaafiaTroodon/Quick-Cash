@@ -6,6 +6,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.assertion.ViewAssertions;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiObject;
+import androidx.test.uiautomator.UiObjectNotFoundException;
+import androidx.test.uiautomator.UiSelector;
 
 import com.example.quickcash.ui.CreatorDashboard;
 import com.example.quickcash.ui.LoginActivity;
@@ -57,13 +62,18 @@ public class LoginActivityTest {
 
 
     @Test
-    public void testLoginPassAndNavigatesToDashboard() throws InterruptedException {
+    public void testLoginPassAndNavigatesToDashboard() throws InterruptedException, UiObjectNotFoundException {
         // Simulate typing invalid credentials and clicking login
         onView(withId(R.id.editTextEmail)).perform(typeText("taiki@gmail.com"), closeSoftKeyboard());
         onView(withId(R.id.editTextPassword)).perform(typeText("Taiki123@"), closeSoftKeyboard());
         onView(withId(R.id.buttonLogin)).perform(click());
 
         Thread.sleep(5000);
+        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        UiObject allowLocationButton = device.findObject(new UiSelector().text("While using the app"));
+        if (allowLocationButton.exists() && allowLocationButton.isEnabled()) {
+            allowLocationButton.click();
+        }
         onView(withId(R.id.dashboardLayout))
                 .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
     }
