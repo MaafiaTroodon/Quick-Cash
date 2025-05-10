@@ -1,8 +1,10 @@
-package com.example.quickcash.validator;
+package com.example.quickcash;
 
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
+
+import com.example.quickcash.validator.JobValidator;
 
 public class JobValidatorTest {
 

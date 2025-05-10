@@ -2,7 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <application
+
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -37,7 +40,8 @@
             android:exported="true" /> <!-- Searcher Dashboard Activity -->
         <activity
             android:name=".ui.SearcherDashboard"
-            android:exported="true" /> <!-- Login Activity Activity -->
+            android:exported="true" />
+        <!-- Login Activity Activity -->
         <activity
             android:name=".ui.LoginActivity"
             android:exported="true" />
@@ -47,6 +51,11 @@
         <activity
             android:name=".ui.FilterPage"
             android:exported="true" />
+        <activity android:name=".ui.CreatorPreferredList"
+            android:exported="true" />
+
+        <activity android:name=".ui.JobDetailsActivity" />
+
     </application>
 
 </manifest>

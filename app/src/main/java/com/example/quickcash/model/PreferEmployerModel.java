@@ -5,6 +5,9 @@ public class PreferEmployerModel {
 
 
     public PreferEmployerModel() {
+        this.employerEmail = "You don't";
+        this.company = "have a";
+        this.addedTime = "preferred Employer";
     }
 
     public PreferEmployerModel(JobModel jobModel, String time) {

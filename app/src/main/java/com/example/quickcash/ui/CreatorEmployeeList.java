@@ -15,8 +15,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.quickcash.R;
 import com.example.quickcash.core.Users;
 import com.example.quickcash.database.Firebase;
-import com.example.quickcash.model.UserModel;
+import com.example.quickcash.model.PreferEmployerModel;
 import com.example.quickcash.model.PreferEmployeeModel;
+import com.example.quickcash.model.UserModel;
 import com.example.quickcash.util.EmployeeAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -26,6 +27,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class CreatorEmployeeList extends AppCompatActivity implements EmployeeAdapter.ButtonClickListener {
@@ -46,7 +49,6 @@ public class CreatorEmployeeList extends AppCompatActivity implements EmployeeAd
 
         auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser() == null) {
-            // User is not logged in, redirect to login screen
             startActivity(new Intent(this, LoginActivity.class));
             finish();
             return;
@@ -75,27 +77,55 @@ public class CreatorEmployeeList extends AppCompatActivity implements EmployeeAd
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 employeeList.clear();
-                Log.d("FirebaseData", "Snapshot: " + snapshot.toString()); // Log the entire snapshot
+                List<UserModel> allUsers = new ArrayList<>();
 
+                // Collect all user data first
                 for (DataSnapshot userSnapshot : snapshot.getChildren()) {
                     String keyEmail = userSnapshot.getKey();
                     if (keyEmail != null) {
                         String userEmail = keyEmail.replace(",", ".");
                         UserModel user = userSnapshot.getValue(UserModel.class);
-
                         if (user != null) {
-                            user.setEmail(userEmail); // Set correct email
-                            Log.d("FirebaseData", "User: " + user.getUsername() + ", Role: " + user.getRole()); // Log each user
-
-                            if ("Searcher".equals(user.getRole())) {
-                                employeeList.add(user);
-                                Log.d("FirebaseData", "Added Searcher: " + user.getUsername()); // Log added searchers
-                            }
+                            user.setEmail(userEmail);
+                            allUsers.add(user);
                         }
                     }
                 }
+
+                List<PreferEmployeeModel> preferredEmployees = new ArrayList<>();
+                for (UserModel u : allUsers) {
+                    if (u.getEmail().equals(currentUserEmail)) {
+                        preferredEmployees = u.getPreferredEmployees();
+                        break;
+                    }
+                }
+
+                for (UserModel user : allUsers) {
+                    if ("Searcher".equals(user.getRole())) {
+                        int score = 0;
+                        for (PreferEmployerModel job : user.getPreferredJob()) {
+                            if (currentUserEmail.equals(job.getEmployerEmail())) {
+                                score += 2; // Prior work history
+                            }
+                        }
+                        for (PreferEmployeeModel emp : preferredEmployees) {
+                            if (emp.getEmployeeEmail().equals(user.getEmail())) {
+                                score += 1; // Employee marked this employer preferred
+                            }
+                        }
+                        user.setPassword(String.valueOf(score)); // Store score temporarily
+                        employeeList.add(user);
+                    }
+                }
+
+                // Sort employees by score descending (rating placeholder is 0)
+                Collections.sort(employeeList, (u1, u2) -> {
+                    int score1 = Integer.parseInt(u1.getPassword());
+                    int score2 = Integer.parseInt(u2.getPassword());
+                    return Integer.compare(score2, score1);
+                });
+
                 employeeAdapter.updateEmployees(employeeList);
-                Log.d("EmployeeList", "Total employees fetched: " + employeeList.size());
             }
 
             @Override
@@ -126,7 +156,6 @@ public class CreatorEmployeeList extends AppCompatActivity implements EmployeeAd
                     for (DataSnapshot employeeSnapshot : snapshot.getChildren()) {
                         PreferEmployeeModel employee = employeeSnapshot.getValue(PreferEmployeeModel.class);
                         preferredEmployees.add(employee);
-                        Log.d("PreferredEmployees", "Existing Preferred Employee: " + employee.getEmployeeName());
                     }
                 }
 
@@ -138,18 +167,8 @@ public class CreatorEmployeeList extends AppCompatActivity implements EmployeeAd
 
                 if (!preferredEmployees.contains(newPreferredEmployee)) {
                     preferredEmployees.add(newPreferredEmployee);
-                    usersRef.child(sanitizedEmail).child("preferredEmployees").setValue(preferredEmployees)
-                            .addOnCompleteListener(task -> {
-                                if (task.isSuccessful()) {
-                                    Log.d("PreferredEmployees", "Added to preferred employees: " + newPreferredEmployee.getEmployeeName());
-                                    Toast.makeText(CreatorEmployeeList.this, "Added to preferred employees", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Log.e("PreferredEmployees", "Failed to add to preferred employees");
-                                    Toast.makeText(CreatorEmployeeList.this, "Failed to add to preferred employees", Toast.LENGTH_LONG).show();
-                                }
-                            });
+                    usersRef.child(sanitizedEmail).child("preferredEmployees").setValue(preferredEmployees);
                 } else {
-                    Log.d("PreferredEmployees", "Employee already in preferred list: " + newPreferredEmployee.getEmployeeName());
                     Toast.makeText(CreatorEmployeeList.this, "Employee already in preferred list", Toast.LENGTH_SHORT).show();
                 }
             }
