@@ -1,8 +1,10 @@
-package com.example.quickcash.validator;
+package com.example.quickcash;
 
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
+
+import com.example.quickcash.validator.JobValidator;
 
 public class JobValidatorTest {
 
@@ -89,7 +91,6 @@ public class JobValidatorTest {
         assertFalse(validator.isValidType("RandomType"));
     }
 
-    // ✅ Test isValidSalary()
     @Test
     public void testValidSalary_PositiveNumber() {
         assertTrue(validator.isValidSalary("50000"));
@@ -120,7 +121,7 @@ public class JobValidatorTest {
         assertFalse(validator.isValidSalary("abcd"));
     }
 
-    // ✅ Test isValidCompany()
+
     @Test
     public void testValidCompany() {
         assertTrue(validator.isValidCompany("Tech Corp"));
@@ -135,4 +136,51 @@ public class JobValidatorTest {
     public void testInvalidCompany_Null() {
         assertFalse(validator.isValidCompany(null));
     }
+
+    @Test
+    public void testValidEmployerPhone() {
+        assertTrue(validator.isValidEmployerPhone("+1234567890"));
+        assertTrue(validator.isValidEmployerPhone("1234567890"));
+    }
+
+    @Test
+    public void testInvalidEmployerPhone_Empty() {
+        assertFalse(validator.isValidEmployerPhone(""));
+    }
+
+    @Test
+    public void testInvalidEmployerPhone_Null() {
+        assertFalse(validator.isValidEmployerPhone(null));
+    }
+
+    @Test
+    public void testInvalidEmployerPhone_ShortNumber() {
+        assertFalse(validator.isValidEmployerPhone("12345"));
+    }
+
+    @Test
+    public void testInvalidEmployerPhone_LongNumber() {
+        assertFalse(validator.isValidEmployerPhone("12345678901234"));
+    }
+
+    @Test
+    public void testInvalidEmployerPhone_NonNumeric() {
+        assertFalse(validator.isValidEmployerPhone("abcd123456"));
+    }
+
+    @Test
+    public void testValidEmployerName() {
+        assertTrue(validator.isValidEmployerName("John Doe"));
+    }
+
+    @Test
+    public void testInvalidEmployerName_Empty() {
+        assertFalse(validator.isValidEmployerName(""));
+    }
+
+    @Test
+    public void testInvalidEmployerName_Null() {
+        assertFalse(validator.isValidEmployerName(null));
+    }
+
 }

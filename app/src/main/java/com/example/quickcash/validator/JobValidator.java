@@ -38,4 +38,13 @@ public class JobValidator {
         return company != null && !company.isEmpty();
     }
 
+    public boolean isValidEmployerPhone(String employerPhone) {
+        return employerPhone != null && !employerPhone.isEmpty() && employerPhone.matches("\\+?[0-9]{10,13}");
+    }
+
+    public boolean isValidEmployerName(String employerName) {
+        return employerName != null && !employerName.isEmpty();
+    }
+
+
 }
