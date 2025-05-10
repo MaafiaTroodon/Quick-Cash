@@ -8,6 +8,16 @@
     tools:context=".ui.SearcherDashboard">
 
     <TextView
+        android:id="@+id/locationText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Your Location: "
+        android:textSize="16sp"
+        android:padding="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
         android:id="@+id/heading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -36,7 +46,7 @@
         <EditText
             android:id="@+id/searchInput"
             android:layout_width="282dp"
-            android:layout_height="41dp"
+            android:layout_height="48dp"
             android:layout_weight="1"
             android:background="@android:drawable/editbox_background"
             android:drawableStart="@android:drawable/ic_search_category_default"
