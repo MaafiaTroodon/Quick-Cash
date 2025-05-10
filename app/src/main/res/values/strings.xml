@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">QuickCash</string>
+    <string name="amount_required">Please enter an amount</string>
+    <string name="invalid_amount">Amount needs to be greater than 0</string>
 </resources>

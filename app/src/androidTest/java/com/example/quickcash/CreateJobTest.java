@@ -15,6 +15,11 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiObject;
+import androidx.test.uiautomator.UiObjectNotFoundException;
+import androidx.test.uiautomator.UiSelector;
 
 import com.example.quickcash.database.Firebase;
 import com.example.quickcash.ui.LoginActivity;
@@ -37,13 +42,18 @@ public class CreateJobTest {
     private Firebase firebase = new Firebase();
 
     @Test
-    public void testErrorJobCreation() throws InterruptedException {
+    public void testErrorJobCreation() throws InterruptedException, UiObjectNotFoundException {
 
         onView(withId(R.id.editTextEmail)).perform(typeText("taiki@gmail.com"), closeSoftKeyboard());
         onView(withId(R.id.editTextPassword)).perform(typeText("Taiki123@"), closeSoftKeyboard());
         onView(withId(R.id.buttonLogin)).perform(click());
 
         Thread.sleep(1000);
+        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        UiObject allowLocationButton = device.findObject(new UiSelector().text("While using the app"));
+        if (allowLocationButton.exists() && allowLocationButton.isEnabled()) {
+            allowLocationButton.click();
+        }
         onView(withId(R.id.dashboardLayout))
                 .check(matches(ViewMatchers.isDisplayed()));
 
@@ -52,8 +62,9 @@ public class CreateJobTest {
         onView(withId(R.id.jobDescription)).perform(typeText("Come work for us we are hiring!"), closeSoftKeyboard());
         onView(withId(R.id.jobLocation)).perform(typeText("Halifax, NS"), closeSoftKeyboard());
         onView(withId(R.id.companyName)).perform(typeText("Software inc"), closeSoftKeyboard());
-
         onView(withId(R.id.jobType)).perform(click());
+        onView(withId(R.id.employerPhone)).perform(typeText("+1234567890"), closeSoftKeyboard());
+        onView(withId(R.id.employerName)).perform(typeText("John Doe"), closeSoftKeyboard());
         onData(allOf(is(instanceOf(String.class)), is("Select Job Type"))).perform(click());
 
         onView(withId(R.id.salary)).perform(typeText("24.60"), closeSoftKeyboard());
@@ -64,12 +75,18 @@ public class CreateJobTest {
 
 
     @Test
-    public void testValidJobCreation() throws InterruptedException {
+    public void testValidJobCreation() throws InterruptedException, UiObjectNotFoundException {
         onView(withId(R.id.editTextEmail)).perform(typeText("taiki@gmail.com"), closeSoftKeyboard());
         onView(withId(R.id.editTextPassword)).perform(typeText("Taiki123@"), closeSoftKeyboard());
         onView(withId(R.id.buttonLogin)).perform(click());
 
+        // here a location asks to allow location, press the "While using the app" button
         Thread.sleep(1000);
+        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        UiObject allowLocationButton = device.findObject(new UiSelector().text("While using the app"));
+        if (allowLocationButton.exists() && allowLocationButton.isEnabled()) {
+            allowLocationButton.click();
+        }
         onView(withId(R.id.dashboardLayout))
                 .check(matches(ViewMatchers.isDisplayed()));
 
@@ -79,6 +96,8 @@ public class CreateJobTest {
         onView(withId(R.id.jobLocation)).perform(typeText("Halifax, NS"), closeSoftKeyboard());
         onView(withId(R.id.companyName)).perform(typeText("Software inc"), closeSoftKeyboard());
         onView(withId(R.id.jobType)).perform(click());
+        onView(withId(R.id.employerPhone)).perform(typeText("+1234567890"), closeSoftKeyboard());
+        onView(withId(R.id.employerName)).perform(typeText("John Doe"), closeSoftKeyboard());
         onData(allOf(is(instanceOf(String.class)), is("Full-Time"))).perform(click());
         onView(withId(R.id.salary)).perform(typeText("24.60"), closeSoftKeyboard());
         onView(withId(R.id.submitButton)).perform(click());

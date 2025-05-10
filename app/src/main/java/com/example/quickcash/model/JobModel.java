@@ -1,19 +1,26 @@
 package com.example.quickcash.model;
 
-public class JobModel {
-    private String title;
-    private String description;
-    private String location;
-    private String type;
-    private String salaryText;
-    private String company;
-    private String employerEmail;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-    // 🔹 No-argument constructor (Required by Firebase)
+import com.google.gson.Gson;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class JobModel implements Parcelable {
+    private String title, description, location, type, salaryText, company, employerEmail;
+    private String employerPhone;
+    private String employerName;
+
+    private List<String> applicants;
+
     public JobModel() {
+        applicants = new ArrayList<>();
     }
 
-    public JobModel(String title, String description, String location, String type, String salaryText, String company, String employerEmail) {
+    public JobModel(String title, String description, String location, String type,
+                    String salaryText, String company, String employerEmail,  String employerPhone, String employerName) {
         this.title = title;
         this.description = description;
         this.location = location;
@@ -21,41 +28,81 @@ public class JobModel {
         this.salaryText = salaryText;
         this.company = company;
         this.employerEmail = employerEmail;
+        this.employerPhone = employerPhone;
+        this.employerName = employerName;
+        this.applicants = new ArrayList<>();
     }
 
-    public JobModel(String title, String location, String salaryText,String company) {
-        this.title = title;
-        this.location = location;
-        this.salaryText = salaryText;
-        this.company = company;
+    protected JobModel(Parcel in) {
+        title = in.readString();
+        description = in.readString();
+        location = in.readString();
+        type = in.readString();
+        salaryText = in.readString();
+        company = in.readString();
+        employerEmail = in.readString();
+        employerPhone = in.readString();
+        employerName = in.readString();
+        applicants = in.createStringArrayList();
     }
 
-    // 🔹 Getters for Firebase serialization
-    public String getTitle() {
-        return title;
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(title);
+        dest.writeString(description);
+        dest.writeString(location);
+        dest.writeString(type);
+        dest.writeString(salaryText);
+        dest.writeString(company);
+        dest.writeString(employerEmail);
+        dest.writeString(employerPhone);
+        dest.writeString(employerName);
+        dest.writeStringList(applicants);
     }
 
-    public String getDescription() {
-        return description;
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
-    public String getLocation() {
-        return location;
+    public static final Creator<JobModel> CREATOR = new Creator<JobModel>() {
+        @Override
+        public JobModel createFromParcel(Parcel in) {
+            return new JobModel(in);
+        }
+
+        @Override
+        public JobModel[] newArray(int size) {
+            return new JobModel[size];
+        }
+    };
+
+    public String getTitle() { return title; }
+    public String getDescription() { return description; }
+    public String getLocation() { return location; }
+    public String getType() { return type; }
+    public String getSalaryText() { return salaryText; }
+    public String getCompany() { return company; }
+    public String getEmployerEmail() { return employerEmail; }
+    public String getEmployerPhone() { return employerPhone; }
+    public String getEmployerName() { return employerName; }
+
+    public List<String> getApplicants() { return applicants; }
+    public void setApplicants(List<String> applicants) { this.applicants = applicants; }
+
+    public void addApplicant(String email) {
+        if (applicants == null) {
+            applicants = new ArrayList<>();
+        }
+        if (!applicants.contains(email)) {
+            applicants.add(email);
+        }
+    }
+    public boolean isAppliable(String userEmail) {
+        return applicants.contains(userEmail);
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public String getSalaryText() {
-        return salaryText;
-    }
-
-    public String getCompany() {
-        return company;
-    }
-
-    public String getEmployerEmail() {
-        return employerEmail;
+    public String toJson() {
+        return new Gson().toJson(this);
     }
 }

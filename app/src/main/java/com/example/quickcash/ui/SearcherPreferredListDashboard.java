@@ -97,7 +97,6 @@ public class SearcherPreferredListDashboard extends AppCompatActivity implements
     @Override
     public void onItemClick(View view, int position) {
         PreferEmployerModel selectedItem = prefAdapter.getItem(position);
-//        Toast.makeText(this, selectedItem.getCompany(), Toast.LENGTH_SHORT).show();
         removeToPreferredList(selectedItem);
     }
 
